@@ -1,0 +1,19 @@
+{
+  "name": "fsw-calendar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yagihash/fsw-calendar.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yagihash/fsw-calendar/issues"
+  },
+  "homepage": "https://github.com/yagihash/fsw-calendar#readme"
+}
