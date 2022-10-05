@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	_ "github.com/GoogleCloudPlatform/functions-framework-go"
 	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
 
