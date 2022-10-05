@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 	"time"
 
-	"github.com/yagihash/fsw-calendar/frame"
+	"github.com/yagihash/fsw-calendar/event"
 
 	"google.golang.org/api/calendar/v3"
 
@@ -57,13 +56,13 @@ func realMain() int {
 	for i := 0; i < c.Recurrence; i++ {
 		url := fmt.Sprintf(TemplateURL, y, m)
 
-		logger.Info("start to load schedules", zap.String("url", url))
-
-		fetchedFrames, err := frame.Fetch(url)
+		fetchedEvents, err := event.Fetch(url)
 		if err != nil {
 			logger.Fatal("failed to fetch schedule data", zap.Error(err))
 			return ExitError
 		}
+
+		logger.Info("loaded schedules", zap.String("url", url))
 
 		ctx := context.Background()
 		cs, err := calendar.NewService(ctx) //, option.WithCredentialsFile("yagihash-892cb09a93a9.json"))
@@ -81,33 +80,36 @@ func realMain() int {
 			logger.Error("err", zap.Error(err))
 		}
 
-		var existingFrames []*frame.Frame
-		for _, e := range events.Items {
-			existingFrames = append(existingFrames, frame.NewFromEvent(e))
+		existingEvents := event.Events(events.Items)
+
+		toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
+		if toBeAdded == nil && toBeDeleted == nil {
+			logger.Info("no update", zap.Int("year", y), zap.Int("month", m))
+			continue
 		}
 
-		if reflect.DeepEqual(existingFrames, fetchedFrames) {
-			logger.Info("no update", zap.Int("year", y), zap.Int("month", m))
-		} else {
-			logger.Info("start replacing or adding events", zap.Int("year", y), zap.Int("month", m))
-
-			for _, e := range events.Items {
-				if err := cs.Events.Delete(c.CalendarID, e.Id).Do(); err != nil {
-					logger.Error("failed to delete event", zap.Error(err), zap.Any("event", e))
-				}
-			}
-
-			for _, f := range fetchedFrames {
-				if f == nil {
+		if toBeAdded != nil {
+			for _, e := range toBeAdded {
+				if e == nil {
 					continue
 				}
 
-				_, err := cs.Events.Insert(c.CalendarID, f.Event()).Do()
+				_, err := cs.Events.Insert(c.CalendarID, e).Do()
 				if err != nil {
-					logger.Error("failed to insert event", zap.Error(err), zap.Any("event", f.Event()))
+					logger.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 					return ExitError
 				}
 			}
+			logger.Info("added new events", zap.Int("count", len(toBeAdded)))
+		}
+
+		if toBeDeleted != nil {
+			for _, e := range toBeDeleted {
+				if err := cs.Events.Delete(c.CalendarID, e.Id).Do(); err != nil {
+					logger.Error("failed to delete event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
+				}
+			}
+			logger.Info("deleted stale events", zap.Int("count", len(toBeDeleted)))
 		}
 
 		y, m = nextY, nextM

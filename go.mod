@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/google/go-cmp v0.5.8
 	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/zap v1.23.0
 	google.golang.org/api v0.98.0

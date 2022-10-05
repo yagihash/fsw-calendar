@@ -2,11 +2,7 @@ package frame
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
 	"time"
-
-	"github.com/PuerkitoBio/goquery"
 
 	"google.golang.org/api/calendar/v3"
 )
@@ -56,33 +52,6 @@ func (f *Frame) Event() *calendar.Event {
 			TimeZone: tz,
 		},
 	}
-}
-
-func Fetch(url string) ([]*Frame, error) {
-	var frames []*Frame
-
-	res, err := http.Get(url)
-	if err != nil {
-		return frames, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return frames, fmt.Errorf("status code error: %s", res.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return frames, err
-	}
-
-	doc.Find("#table-calendar > tbody > tr.row-rc > td.type > div > p").Each(func(i int, s *goquery.Selection) {
-		d, _ := s.Parent().Parent().Parent().Attr("data-date")
-		t := strings.Split(doc.Find("#table-calendar > tbody > tr.row-rc > td.time > div > p").Eq(i).Text(), "~")
-		frames = append(frames, New(d, t[0], t[1], s.Text()))
-	})
-
-	return frames, nil
 }
 
 func NewFromEvent(event *calendar.Event) *Frame {
