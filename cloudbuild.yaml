@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - fsw-calendar
+      - --region=asia-northeast1
+      - --source=.
+      - --trigger-topic=fsw-calendar
+      - --runtime=go119
+      - --entry-point=Register

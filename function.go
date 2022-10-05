@@ -1,37 +1,27 @@
-package main
+package function
 
 import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
-	"github.com/yagihash/fsw-calendar/event"
-
+	"cloud.google.com/go/pubsub"
+	_ "github.com/GoogleCloudPlatform/functions-framework-go"
+	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
 
-	"go.uber.org/zap"
-
 	"github.com/yagihash/fsw-calendar/config"
+	"github.com/yagihash/fsw-calendar/event"
 )
 
-const (
-	ExitOK = iota
-	ExitError
+const TemplateURL = "https://www.fsw.tv/driving/sports/ss/ss-4/%d/%02d.html"
 
-	TemplateURL = "https://www.fsw.tv/driving/sports/ss/ss-4/%d/%02d.html"
-)
-
-func main() {
-	os.Exit(realMain())
-}
-
-func realMain() int {
+func Register(ctx context.Context, message *pubsub.Message) error {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		log.Println(err)
-		return ExitError
+		return err
 	}
 
 	defer logger.Sync()
@@ -41,13 +31,13 @@ func realMain() int {
 	c, err := config.Load()
 	if err != nil {
 		logger.Fatal("failed to load config", zap.Error(err))
-		return ExitError
+		return err
 	}
 
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
 		logger.Fatal("failed to load timezone", zap.Error(err))
-		return ExitError
+		return err
 	}
 
 	y := time.Now().In(jst).Year()
@@ -59,16 +49,15 @@ func realMain() int {
 		fetchedEvents, err := event.Fetch(url)
 		if err != nil {
 			logger.Fatal("failed to fetch schedule data", zap.Error(err))
-			return ExitError
+			return err
 		}
 
 		logger.Info("loaded schedules", zap.String("url", url))
 
-		ctx := context.Background()
 		cs, err := calendar.NewService(ctx) //, option.WithCredentialsFile("yagihash-892cb09a93a9.json"))
 		if err != nil {
 			logger.Fatal("failed to access google calendar API", zap.Error(err))
-			return ExitError
+			return err
 		}
 
 		nextY, nextM := NextMonth(y, m)
@@ -78,6 +67,7 @@ func realMain() int {
 			TimeMax(time.Date(nextY, time.Month(nextM), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).Do()
 		if err != nil {
 			logger.Error("err", zap.Error(err))
+			return err
 		}
 
 		existingEvents := event.Events(events.Items)
@@ -97,7 +87,7 @@ func realMain() int {
 				_, err := cs.Events.Insert(c.CalendarID, e).Do()
 				if err != nil {
 					logger.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-					return ExitError
+					return err
 				}
 			}
 			logger.Info("added new events", zap.Int("count", len(toBeAdded)))
@@ -115,7 +105,7 @@ func realMain() int {
 		y, m = nextY, nextM
 	}
 
-	return ExitOK
+	return nil
 }
 
 func NextMonth(y, m int) (int, int) {
