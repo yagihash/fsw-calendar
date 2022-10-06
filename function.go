@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yagihash/fsw-calendar/logger"
-
 	"cloud.google.com/go/pubsub"
 	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
 
 	"github.com/yagihash/fsw-calendar/config"
 	"github.com/yagihash/fsw-calendar/event"
+	"github.com/yagihash/fsw-calendar/logger"
 )
 
 const TemplateURL = "https://www.fsw.tv/driving/sports/ss/ss-4/%d/%02d.html"
@@ -53,7 +52,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		log.Info("loaded schedules", zap.String("url", url))
 
-		cs, err := calendar.NewService(ctx) //, option.WithCredentialsFile("yagihash-892cb09a93a9.json"))
+		cs, err := calendar.NewService(ctx)
 		if err != nil {
 			log.Fatal("failed to access google calendar API", zap.Error(err))
 			return err
@@ -95,7 +94,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		if toBeDeleted != nil {
 			for _, e := range toBeDeleted {
 				if err := cs.Events.Delete(c.CalendarID, e.Id).Do(); err != nil {
-					log.Error("failed to delete event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
+					log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 				}
 			}
 			log.Info("deleted stale events", zap.Int("count", len(toBeDeleted)))
