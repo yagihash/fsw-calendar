@@ -14,6 +14,7 @@ require (
 	cloud.google.com/go v0.104.0 // indirect
 	cloud.google.com/go/compute v1.7.0 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
+	cloud.google.com/go/logging v1.5.0 // indirect
 	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
