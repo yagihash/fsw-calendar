@@ -61,10 +61,6 @@ func (es Events) Has(b *calendar.Event) bool {
 	return false
 }
 
-func (es Events) Add(e *calendar.Event) {
-	es = append(es, e)
-}
-
 func Fetch(url string) (Events, error) {
 	var events []*calendar.Event
 
