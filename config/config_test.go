@@ -9,7 +9,6 @@ import (
 
 const (
 	EnvTimezone   = "TIMEZONE"
-	EnvCalendarID = "CALENDAR_ID"
 	EnvRecurrence = "RECURRENCE"
 )
 
@@ -24,7 +23,6 @@ func TestLoad(t *testing.T) {
 			name: "SuccessWithSpecifiedValues",
 			input: map[string]string{
 				EnvTimezone:   "TEST_TIMEZONE",
-				EnvCalendarID: "TEST_CALENDAR_ID",
 				EnvRecurrence: "10",
 			},
 			want: &Config{
@@ -36,7 +34,6 @@ func TestLoad(t *testing.T) {
 		{
 			name: "SuccessWithDefaultTimezone",
 			input: map[string]string{
-				EnvCalendarID: "TEST_CALENDAR_ID",
 				EnvRecurrence: "10",
 			},
 			want: &Config{
@@ -48,8 +45,7 @@ func TestLoad(t *testing.T) {
 		{
 			name: "SuccessWithDefaultRecurrence",
 			input: map[string]string{
-				EnvTimezone:   "TEST_TIMEZONE",
-				EnvCalendarID: "TEST_CALENDAR_ID",
+				EnvTimezone: "TEST_TIMEZONE",
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
