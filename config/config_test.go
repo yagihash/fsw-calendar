@@ -29,7 +29,6 @@ func TestLoad(t *testing.T) {
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
-				CalendarID: "TEST_CALENDAR_ID",
 				Recurrence: 10,
 			},
 			expectError: false,
@@ -42,7 +41,6 @@ func TestLoad(t *testing.T) {
 			},
 			want: &Config{
 				Timezone:   "Asia/Tokyo",
-				CalendarID: "TEST_CALENDAR_ID",
 				Recurrence: 10,
 			},
 			expectError: false,
@@ -55,16 +53,9 @@ func TestLoad(t *testing.T) {
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
-				CalendarID: "TEST_CALENDAR_ID",
 				Recurrence: 2,
 			},
 			expectError: false,
-		},
-		{
-			name:        "FailWithMissingRequiredValue",
-			input:       map[string]string{},
-			want:        nil,
-			expectError: true,
 		},
 	}
 

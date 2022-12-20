@@ -2,6 +2,7 @@ package function
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -13,8 +14,6 @@ import (
 	"github.com/yagihash/fsw-calendar/event"
 	"github.com/yagihash/fsw-calendar/logger"
 )
-
-const TemplateURL = "https://www.fsw.tv/driving/sports/ss/ss-4/%d/%02d.html"
 
 func Register(ctx context.Context, message *pubsub.Message) error {
 	log, err := logger.New()
@@ -32,6 +31,9 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		return err
 	}
 
+	var data config.Data
+	json.Unmarshal(message.Data, &data)
+
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
 		log.Fatal("failed to load timezone", zap.Error(err))
@@ -42,7 +44,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	m := int(time.Now().In(jst).Month())
 
 	for i := 0; i < c.Recurrence; i++ {
-		url := fmt.Sprintf(TemplateURL, y, m)
+		url := fmt.Sprintf(data.URL, y, m)
 
 		fetchedEvents, err := event.Fetch(url)
 		if err != nil {
@@ -60,7 +62,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		nextY, nextM := NextMonth(y, m)
 
-		events, err := cs.Events.List(c.CalendarID).ShowDeleted(false).SingleEvents(true).
+		events, err := cs.Events.List(data.CalendarID).ShowDeleted(false).SingleEvents(true).
 			TimeMin(time.Date(y, time.Month(m), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).
 			TimeMax(time.Date(nextY, time.Month(nextM), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).Do()
 		if err != nil {
@@ -82,7 +84,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 					continue
 				}
 
-				_, err := cs.Events.Insert(c.CalendarID, e).Do()
+				_, err := cs.Events.Insert(data.CalendarID, e).Do()
 				if err != nil {
 					log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 					return err
@@ -93,7 +95,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		if toBeDeleted != nil {
 			for _, e := range toBeDeleted {
-				if err := cs.Events.Delete(c.CalendarID, e.Id).Do(); err != nil {
+				if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
 					log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 				}
 			}
