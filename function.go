@@ -48,7 +48,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		fetchedEvents, err := event.Fetch(url)
 		if err != nil {
-			log.Fatal("failed to fetch schedule data", zap.Error(err))
+			log.Fatal("failed to fetch schedule data", zap.Error(err), zap.String("url", url))
 			return err
 		}
 
