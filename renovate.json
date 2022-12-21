@@ -2,5 +2,33 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
-  ]
+  ],
+  "rangeStrategy": "pin",
+  "dependencies": {
+    "labels": [
+      "renovate",
+      "dep"
+    ],
+    "vulnerabilityAlerts": {
+      "labels": [
+        "renovate",
+        "dep",
+        "security"
+      ]
+    }
+  },
+  "devDependencies": {
+    "labels": [
+      "renovate",
+      "dep"
+    ],
+    "vulnerabilityAlerts": {
+      "labels": [
+        "renovate",
+        "dep",
+        "security"
+      ]
+    }
+  },
+  "automerge": true
 }
