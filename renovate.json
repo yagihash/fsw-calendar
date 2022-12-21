@@ -6,26 +6,22 @@
   "rangeStrategy": "pin",
   "dependencies": {
     "labels": [
-      "renovate",
-      "dep"
+      "renovate"
     ],
     "vulnerabilityAlerts": {
       "labels": [
         "renovate",
-        "dep",
         "security"
       ]
     }
   },
   "devDependencies": {
     "labels": [
-      "renovate",
-      "dep"
+      "renovate"
     ],
     "vulnerabilityAlerts": {
       "labels": [
         "renovate",
-        "dep",
         "security"
       ]
     }
