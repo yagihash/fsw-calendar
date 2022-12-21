@@ -3,6 +3,9 @@
   "extends": [
     "config:base"
   ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
   "rangeStrategy": "pin",
   "dependencies": {
     "labels": [
