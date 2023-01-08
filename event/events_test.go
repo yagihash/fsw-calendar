@@ -30,6 +30,17 @@ var (
 		Start:   &calendar.EventDateTime{DateTime: time.Now().Add(180 * time.Minute).Format(time.RFC3339)},
 		End:     &calendar.EventDateTime{DateTime: time.Now().Add(205 * time.Minute).Format(time.RFC3339)},
 	}
+
+	eventBrokenStartDateTime = &calendar.Event{
+		Summary: "eventBrokenDateTime",
+		Start:   &calendar.EventDateTime{DateTime: "---"},
+		End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+	}
+	eventBrokenEndDateTime = &calendar.Event{
+		Summary: "eventBrokenDateTime",
+		Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
+		End:     &calendar.EventDateTime{DateTime: "---"},
+	}
 )
 
 func TestEvents_Diff(t *testing.T) {
@@ -51,14 +62,94 @@ func TestEvents_Diff(t *testing.T) {
 }
 
 func TestEvents_Has(t *testing.T) {
-	events := Events{A}
-
-	if !events.Has(A) {
-		t.Errorf("Events.Has(A) should return true but got false")
+	type args struct {
+		b *calendar.Event
 	}
 
-	if events.Has(B) {
-		t.Errorf("Events.Has(B) should return false but got true")
+	tests := []struct {
+		name        string
+		events      Events
+		args        args
+		want        bool
+		expectPanic bool
+	}{
+		{
+			name:   "True",
+			events: Events{A},
+			args: args{
+				b: A,
+			},
+			want:        true,
+			expectPanic: false,
+		},
+		{
+			name:   "False",
+			events: Events{A},
+			args: args{
+				b: B,
+			},
+			want:        false,
+			expectPanic: false,
+		},
+		{
+			name:   "BrokenStartDatetimeInEvents",
+			events: Events{eventBrokenStartDateTime},
+			args: args{
+				b: A,
+			},
+			want:        false,
+			expectPanic: true,
+		},
+		{
+			name:   "BrokenEndDatetimeInEvents",
+			events: Events{eventBrokenEndDateTime},
+			args: args{
+				b: A,
+			},
+			want:        false,
+			expectPanic: true,
+		},
+		{
+			name:   "BrokenStartDatetimeInB",
+			events: Events{A},
+			args: args{
+				b: eventBrokenStartDateTime,
+			},
+			want:        false,
+			expectPanic: true,
+		},
+		{
+			name:   "BrokenEndDatetimeInB",
+			events: Events{A},
+			args: args{
+				b: eventBrokenEndDateTime,
+			},
+			want:        false,
+			expectPanic: true,
+		},
+	}
+
+	for _, c := range tests {
+		t.Run(c.name, func(t *testing.T) {
+			defer func() {
+				err := recover()
+
+				switch {
+				case err != nil && c.expectPanic:
+					// OK
+				case err != nil && !c.expectPanic:
+					t.Errorf("unexpected panic: %v", err)
+				case err == nil && c.expectPanic:
+					t.Error("expected panic but did not panic")
+				case err == nil && !c.expectPanic:
+					// OK
+				}
+			}()
+
+			if diff := cmp.Diff(c.events.Has(c.args.b), c.want); diff != "" {
+				t.Errorf("got an unexpected diff:\n%s", diff)
+			}
+		})
 	}
 }
 
