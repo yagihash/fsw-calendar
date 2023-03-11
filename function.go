@@ -87,7 +87,6 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 				_, err := cs.Events.Insert(data.CalendarID, e).Do()
 				if err != nil {
 					log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-					return err
 				}
 			}
 			log.Info("added new events", zap.Int("count", len(toBeAdded)))
