@@ -63,6 +63,7 @@ func (es Events) Has(b *calendar.Event) bool {
 
 func (es Events) Unique() (unique Events) {
 	for i, e := range es {
+		// note: used in the case that the original calendar is broken. no need to ensure uniqueness seriously.
 		if es[i:].Has(e) {
 			// do nothing
 		} else {
