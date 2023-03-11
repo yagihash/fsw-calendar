@@ -153,6 +153,17 @@ func TestEvents_Has(t *testing.T) {
 	}
 }
 
+func TestEvents_Unique(t *testing.T) {
+	redundant := Events{A, A, B, B, C, C}
+	want := Events{A, B, C}
+
+	got := redundant.Unique()
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got an unexpected diff:\n%s", diff)
+	}
+}
+
 func TestFetch(t *testing.T) {
 	// TODO: change implementation of Fetch so that you can test easily
 }
