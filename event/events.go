@@ -71,7 +71,7 @@ func (es Events) Unique() (unique Events) {
 		}
 	}
 
-	return unique
+	return
 }
 
 func Fetch(url string) (Events, error) {
