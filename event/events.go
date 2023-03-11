@@ -61,6 +61,19 @@ func (es Events) Has(b *calendar.Event) bool {
 	return false
 }
 
+func (es Events) Unique() (unique Events) {
+	for i, e := range es {
+		// note: used in the case that the original calendar is broken. no need to ensure uniqueness seriously.
+		if es[i+1:].Has(e) {
+			// do nothing
+		} else {
+			unique = append(unique, e)
+		}
+	}
+
+	return unique
+}
+
 func Fetch(url string) (Events, error) {
 	var events []*calendar.Event
 
