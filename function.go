@@ -72,6 +72,8 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		existingEvents := event.Events(events.Items)
 
+		fetchedEvents = fetchedEvents.Unique()
+
 		toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
 		if toBeAdded == nil && toBeDeleted == nil {
 			log.Info("no update", zap.Int("year", y), zap.Int("month", m))
