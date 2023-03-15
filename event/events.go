@@ -24,13 +24,13 @@ func NewEvents(items []*calendar.Event) Events {
 
 func (es Events) Diff(another Events) (negative, positive Events) {
 	for _, e := range another {
-		if !es.Has(e) {
+		if !(es.Has(e) || negative.Has(e)) {
 			negative = append(negative, e)
 		}
 	}
 
 	for _, e := range es {
-		if !another.Has(e) {
+		if !(another.Has(e) || positive.Has(e)) {
 			positive = append(positive, e)
 		}
 	}
