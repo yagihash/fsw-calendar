@@ -68,7 +68,7 @@ func realMain() int {
 			return ExitError
 		}
 
-		existingEvents := event.Events(events.Items)
+		existingEvents := event.NewEvents(events.Items)
 
 		for _, e := range existingEvents {
 			if err := cs.Events.Delete(*calendarID, e.Id).Do(); err != nil {
