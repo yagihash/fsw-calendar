@@ -1,4 +1,5 @@
 # fsw-calendar
+[![test](https://github.com/yagihash/fsw-calendar/actions/workflows/test.yml/badge.svg)](https://github.com/yagihash/fsw-calendar/actions/workflows/test.yml)
 
 A small Go implementation for GCP Cloud Functions to automatically register the schedules of the running slots in Fuji International Speedway.
 
