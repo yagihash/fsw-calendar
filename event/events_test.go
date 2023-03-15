@@ -55,6 +55,31 @@ var (
 	}
 )
 
+func TestNewEvents(t *testing.T) {
+	arg := []*calendar.Event{
+		{
+			Summary: "A",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+		},
+		{
+			Summary: "B",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(60 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(85 * time.Minute).Format(time.RFC3339)},
+		},
+		{
+			Summary: "C",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(120 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(145 * time.Minute).Format(time.RFC3339)},
+		},
+	}
+	want := Events{A, B, C}
+
+	if diff := cmp.Diff(NewEvents(arg), want); diff != "" {
+		t.Errorf("got an unexpected diff:\n%s", diff)
+	}
+}
+
 func TestEvents_Diff(t *testing.T) {
 	one := Events{A, B, C}
 	another := Events{A, B, D}

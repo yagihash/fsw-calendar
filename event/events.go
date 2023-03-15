@@ -5,10 +5,22 @@ import (
 	"net/http"
 	"strings"
 
+	"google.golang.org/api/calendar/v3"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
 type Events []*Event
+
+func NewEvents(items []*calendar.Event) Events {
+	events := make([]*Event, len(items))
+
+	for i := 0; i < len(items); i++ {
+		events[i] = &Event{items[i]}
+	}
+
+	return events
+}
 
 func (es Events) Diff(another Events) (negative, positive Events) {
 	for _, e := range another {
