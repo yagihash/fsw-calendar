@@ -72,7 +72,7 @@ func realMain() int {
 		return ExitError
 	}
 
-	existingEvents := event.Events(events.Items)
+	existingEvents := event.NewEvents(events.Items)
 
 	log.Info("events length", zap.Int("length", len(fetchedEvents)))
 	fetchedEvents = fetchedEvents.Unique()
