@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
-
-	"google.golang.org/api/calendar/v3"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-type Events []*calendar.Event
+type Events []*Event
 
 func (es Events) Diff(another Events) (negative, positive Events) {
 	for _, e := range another {
@@ -29,31 +26,9 @@ func (es Events) Diff(another Events) (negative, positive Events) {
 	return
 }
 
-func (es Events) Has(b *calendar.Event) bool {
-	sb, err := time.Parse(time.RFC3339, b.Start.DateTime)
-	if err != nil {
-		panic(err)
-	}
-
-	eb, err := time.Parse(time.RFC3339, b.End.DateTime)
-	if err != nil {
-		panic(err)
-	}
-
+func (es Events) Has(b *Event) bool {
 	for _, a := range es {
-		sa, err := time.Parse(time.RFC3339, a.Start.DateTime)
-		if err != nil {
-			panic(err)
-		}
-
-		ea, err := time.Parse(time.RFC3339, a.End.DateTime)
-		if err != nil {
-			panic(err)
-		}
-
-		if a.Summary == b.Summary &&
-			sa == sb &&
-			ea == eb {
+		if a.Equals(b) {
 			return true
 		}
 	}
@@ -75,7 +50,7 @@ func (es Events) Unique() (unique Events) {
 }
 
 func Fetch(url string) (Events, error) {
-	var events []*calendar.Event
+	var events []*Event
 
 	res, err := http.Get(url)
 	if err != nil {
