@@ -91,7 +91,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 					log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 				}
 			}
-			log.Info("added new events", zap.Int("count", len(toBeAdded)))
+			log.Info("added new events", zap.Int("count", len(toBeAdded)), zap.Int("year", y), zap.Int("month", m))
 		}
 
 		if toBeDeleted != nil {
@@ -100,7 +100,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 					log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 				}
 			}
-			log.Info("deleted stale events", zap.Int("count", len(toBeDeleted)))
+			log.Info("deleted stale events", zap.Int("count", len(toBeDeleted)), zap.Int("year", y), zap.Int("month", m))
 		}
 
 		y, m = nextY, nextM

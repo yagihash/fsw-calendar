@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"os"
 	"time"
 
@@ -39,7 +38,11 @@ func realMain() int {
 		return ExitError
 	}
 
-	calendarID := flag.String("c", "", "calendar id")
+	calendarID, ok := os.LookupEnv("CALENDAR_ID")
+	if !ok {
+		log.Error("no calendar_id is specified")
+		return ExitError
+	}
 
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
@@ -60,7 +63,7 @@ func realMain() int {
 
 		nextY, nextM := NextMonth(y, m)
 
-		events, err := cs.Events.List(*calendarID).ShowDeleted(false).SingleEvents(true).
+		events, err := cs.Events.List(calendarID).ShowDeleted(false).SingleEvents(true).
 			TimeMin(time.Date(y, time.Month(m), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).
 			TimeMax(time.Date(nextY, time.Month(nextM), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).Do()
 		if err != nil {
@@ -68,10 +71,12 @@ func realMain() int {
 			return ExitError
 		}
 
+		log.Info("fetched events", zap.Int("size", len(events.Items)), zap.Int("year", y), zap.Int("month", m))
+
 		existingEvents := event.NewEvents(events.Items)
 
 		for _, e := range existingEvents {
-			if err := cs.Events.Delete(*calendarID, e.Id).Do(); err != nil {
+			if err := cs.Events.Delete(calendarID, e.Id).Do(); err != nil {
 				log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 			}
 		}
