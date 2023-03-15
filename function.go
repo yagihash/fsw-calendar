@@ -70,7 +70,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 			return err
 		}
 
-		existingEvents := event.Events(events.Items)
+		existingEvents := event.NewEvents(events.Items)
 
 		fetchedEvents = fetchedEvents.Unique()
 
@@ -86,7 +86,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 					continue
 				}
 
-				_, err := cs.Events.Insert(data.CalendarID, e).Do()
+				_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
 				if err != nil {
 					log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 				}
