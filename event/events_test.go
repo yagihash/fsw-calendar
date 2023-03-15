@@ -10,36 +10,48 @@ import (
 )
 
 var (
-	A = &calendar.Event{
-		Summary: "A",
-		Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
-		End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+	A = &Event{
+		&calendar.Event{
+			Summary: "A",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+		},
 	}
-	B = &calendar.Event{
-		Summary: "B",
-		Start:   &calendar.EventDateTime{DateTime: time.Now().Add(60 * time.Minute).Format(time.RFC3339)},
-		End:     &calendar.EventDateTime{DateTime: time.Now().Add(85 * time.Minute).Format(time.RFC3339)},
+	B = &Event{
+		&calendar.Event{
+			Summary: "B",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(60 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(85 * time.Minute).Format(time.RFC3339)},
+		},
 	}
-	C = &calendar.Event{
-		Summary: "C",
-		Start:   &calendar.EventDateTime{DateTime: time.Now().Add(120 * time.Minute).Format(time.RFC3339)},
-		End:     &calendar.EventDateTime{DateTime: time.Now().Add(145 * time.Minute).Format(time.RFC3339)},
+	C = &Event{
+		&calendar.Event{
+			Summary: "C",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(120 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(145 * time.Minute).Format(time.RFC3339)},
+		},
 	}
-	D = &calendar.Event{
-		Summary: "D",
-		Start:   &calendar.EventDateTime{DateTime: time.Now().Add(180 * time.Minute).Format(time.RFC3339)},
-		End:     &calendar.EventDateTime{DateTime: time.Now().Add(205 * time.Minute).Format(time.RFC3339)},
+	D = &Event{
+		&calendar.Event{
+			Summary: "D",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(180 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(205 * time.Minute).Format(time.RFC3339)},
+		},
 	}
 
-	eventBrokenStartDateTime = &calendar.Event{
-		Summary: "eventBrokenDateTime",
-		Start:   &calendar.EventDateTime{DateTime: "---"},
-		End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+	eventBrokenStartDateTime = &Event{
+		&calendar.Event{
+			Summary: "eventBrokenDateTime",
+			Start:   &calendar.EventDateTime{DateTime: "---"},
+			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+		},
 	}
-	eventBrokenEndDateTime = &calendar.Event{
-		Summary: "eventBrokenDateTime",
-		Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
-		End:     &calendar.EventDateTime{DateTime: "---"},
+	eventBrokenEndDateTime = &Event{
+		&calendar.Event{
+			Summary: "eventBrokenDateTime",
+			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: "---"},
+		},
 	}
 )
 
@@ -63,7 +75,7 @@ func TestEvents_Diff(t *testing.T) {
 
 func TestEvents_Has(t *testing.T) {
 	type args struct {
-		b *calendar.Event
+		b *Event
 	}
 
 	tests := []struct {
