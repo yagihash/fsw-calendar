@@ -51,5 +51,5 @@ func (e *Event) Equals(c *Event) bool {
 		panic(err)
 	}
 
-	return e.Summary == c.Summary && es == cs && ee == ce
+	return e.Summary == c.Summary && es.Equal(cs) && ee.Equal(ce)
 }
