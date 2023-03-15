@@ -74,7 +74,9 @@ func realMain() int {
 
 	existingEvents := event.Events(events.Items)
 
+	log.Info("events length", zap.Int("length", len(fetchedEvents)))
 	fetchedEvents = fetchedEvents.Unique()
+	log.Info("events length", zap.Int("length", len(fetchedEvents)))
 
 	toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
 	if toBeAdded == nil && toBeDeleted == nil {
