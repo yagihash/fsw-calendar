@@ -89,7 +89,7 @@ func realMain() int {
 				continue
 			}
 
-			_, err := cs.Events.Insert(calendarID, e).Do()
+			_, err := cs.Events.Insert(calendarID, e.Event).Do()
 			if err != nil {
 				log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
 			}
