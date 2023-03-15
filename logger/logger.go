@@ -41,7 +41,7 @@ func New() (*zap.Logger, error) {
 	encoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder
 
 	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zap.ErrorLevel)
+	cfg.Level.SetLevel(zap.InfoLevel)
 	cfg.EncoderConfig = encoderConfig
 
 	return cfg.Build()
