@@ -167,6 +167,31 @@ func TestEvent_Equals(t *testing.T) {
 			want:        false,
 			expectPanic: false,
 		},
+		{
+			name: "Panic",
+			event: &Event{
+				&calendar.Event{
+					Summary: "TEST_TITLE",
+					Start: &calendar.EventDateTime{
+						DateTime: "2022-09-20T7:00:00+09:00",
+					},
+					End: &calendar.EventDateTime{
+						DateTime: "2022-09-20T7:25:00+09:00",
+					},
+				},
+			},
+			arg: &Event{
+				&calendar.Event{
+					Summary: "TEST_TITLE",
+					Start:   nil,
+					End: &calendar.EventDateTime{
+						DateTime: "2022-09-21T7:25:00+09:00",
+					},
+				},
+			},
+			want:        false,
+			expectPanic: true,
+		},
 	}
 
 	for _, c := range tests {
