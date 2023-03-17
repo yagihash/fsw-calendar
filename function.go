@@ -23,11 +23,11 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 	defer log.Sync()
 
-	log.Info("logger is ready")
+	log.Debug("logger is ready")
 
 	c, err := config.Load()
 	if err != nil {
-		log.Fatal("failed to load config", zap.Error(err))
+		log.Error("failed to load config", zap.Error(err))
 		return err
 	}
 
@@ -36,7 +36,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
-		log.Fatal("failed to load timezone", zap.Error(err))
+		log.Error("failed to load timezone", zap.Error(err))
 		return err
 	}
 
@@ -48,7 +48,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		fetchedEvents, err := event.Fetch(url)
 		if err != nil {
-			log.Fatal("failed to fetch schedule data", zap.Error(err), zap.String("url", url))
+			log.Error("failed to fetch schedule data", zap.Error(err), zap.String("url", url))
 			return err
 		}
 
@@ -56,7 +56,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		cs, err := calendar.NewService(ctx)
 		if err != nil {
-			log.Fatal("failed to access google calendar API", zap.Error(err))
+			log.Error("failed to access google calendar API", zap.Error(err))
 			return err
 		}
 
@@ -66,7 +66,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 			TimeMin(time.Date(y, time.Month(m), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).
 			TimeMax(time.Date(nextY, time.Month(nextM), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).Do()
 		if err != nil {
-			log.Error("err", zap.Error(err))
+			log.Error("failed to load existing events from google calendar", zap.Error(err))
 			return err
 		}
 
@@ -75,32 +75,30 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		fetchedEvents = fetchedEvents.Unique()
 
 		toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
-		if toBeAdded == nil && toBeDeleted == nil {
-			log.Info("no update", zap.Int("year", y), zap.Int("month", m))
+		if len(toBeAdded) == 0 && len(toBeDeleted) == 0 {
+			log.Debug("no update", zap.Int("year", y), zap.Int("month", m))
 			continue
 		}
 
-		if toBeAdded != nil {
-			for _, e := range toBeAdded {
-				if e == nil {
-					continue
-				}
-
-				_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
-				if err != nil {
-					log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-				}
+		for _, e := range toBeAdded {
+			if e == nil {
+				continue
 			}
-			log.Info("added new events", zap.Int("count", len(toBeAdded)), zap.Int("year", y), zap.Int("month", m))
+
+			_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
+			if err != nil {
+				log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
+			} else {
+				log.Debug("added new event", zap.Any("event", e))
+			}
 		}
 
-		if toBeDeleted != nil {
-			for _, e := range toBeDeleted {
-				if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
-					log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-				}
+		for _, e := range toBeDeleted {
+			if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
+				log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
+			} else {
+				log.Debug("deleted stale event", zap.Any("event", e))
 			}
-			log.Info("deleted stale events", zap.Int("count", len(toBeDeleted)), zap.Int("year", y), zap.Int("month", m))
 		}
 
 		y, m = nextY, nextM
