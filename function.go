@@ -54,7 +54,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 			return err
 		}
 
-		log.Info("loaded schedules", zap.String("url", url))
+		log.Info("loaded schedules", zap.String("url", url), zap.Any("events", fetchedEvents))
 
 		cs, err := calendar.NewService(ctx)
 		if err != nil {
