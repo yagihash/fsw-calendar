@@ -21,7 +21,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		return err
 	}
 
-	defer log.Sync()
+	defer func() { _ = log.Sync() }()
 
 	log.Debug("logger is ready")
 
@@ -32,7 +32,9 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	}
 
 	var data config.Data
-	json.Unmarshal(message.Data, &data)
+	if err := json.Unmarshal(message.Data, &data); err != nil {
+		log.Error("failed to unmarshal message", zap.Error(err), zap.Any("data", message.Data))
+	}
 
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
