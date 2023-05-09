@@ -137,7 +137,6 @@ func ListExistingEvents(cs *calendar.Service, y, m, rec int, tz *time.Location, 
 
 	for i, tmpY, tmpM := 0, y, m; i < rec; i++ {
 		tmpY, tmpM = NextMonth(tmpY, tmpM)
-		fmt.Println(tmpY, tmpM)
 		end = time.Date(tmpY, time.Month(tmpM), 1, 0, 0, 0, 0, tz).Format(time.RFC3339)
 	}
 
