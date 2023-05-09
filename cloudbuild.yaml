@@ -5,9 +5,8 @@ steps:
       - functions
       - deploy
       - fsw-calendar
-      - --gen2
       - --region=asia-northeast1
       - --source=.
       - --trigger-topic=fsw-calendar
-      - --runtime=go120
+      - --runtime=go119
       - --entry-point=Register
