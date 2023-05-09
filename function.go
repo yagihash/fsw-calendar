@@ -74,7 +74,10 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
 	if len(toBeAdded) == 0 && len(toBeDeleted) == 0 {
 		log.Debug("no update", zap.Any("existing", existingEvents), zap.Any("fetched", fetchedEvents))
+		return nil
 	}
+
+	log.Info("need updates", zap.Any("to_be_added", toBeAdded), zap.Any("to_be_deleted", toBeDeleted))
 
 	for _, e := range toBeAdded {
 		if e == nil {
@@ -85,7 +88,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		if err != nil {
 			log.Error("failed to insert event", zap.Error(err), zap.Any("event", e))
 		} else {
-			log.Info("added new event", zap.Any("event", e))
+			log.Debug("added new event", zap.Any("event", e))
 		}
 	}
 
@@ -93,7 +96,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
 			log.Error("failed to reset event", zap.Any("event", e))
 		} else {
-			log.Info("deleted stale event", zap.Any("event", e))
+			log.Debug("deleted stale event", zap.Any("event", e))
 		}
 	}
 
