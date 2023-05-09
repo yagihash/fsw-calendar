@@ -45,65 +45,56 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	y := time.Now().In(jst).Year()
 	m := int(time.Now().In(jst).Month())
 
-	for i := 0; i < c.Recurrence; i++ {
-		url := fmt.Sprintf(data.URL, y, m)
+	fetchedEvents, err := FetchEvents(data.URL, y, m, c.Recurrence)
+	if err != nil {
+		log.Error(
+			"failed to fetch schedule data",
+			zap.Error(err),
+			zap.String("url", data.URL),
+			zap.Int("y", y),
+			zap.Int("m", m),
+			zap.Int("recurrence", c.Recurrence),
+		)
+	}
 
-		fetchedEvents, err := event.Fetch(url)
-		if err != nil {
-			log.Error("failed to fetch schedule data", zap.Error(err), zap.String("url", url))
-			return err
-		}
+	log.Info("loaded schedules", zap.Any("events", fetchedEvents))
 
-		log.Info("loaded schedules", zap.String("url", url), zap.Any("events", fetchedEvents))
+	cs, err := calendar.NewService(ctx)
+	if err != nil {
+		log.Error("failed to access google calendar API", zap.Error(err))
+		return err
+	}
 
-		cs, err := calendar.NewService(ctx)
-		if err != nil {
-			log.Error("failed to access google calendar API", zap.Error(err))
-			return err
-		}
+	existingEvents, err := ListExistingEvents(cs, y, m, c.Recurrence, jst, data.CalendarID)
+	if err != nil {
+		log.Error("failed to load existing events from google calendar", zap.Error(err))
+		return err
+	}
 
-		nextY, nextM := NextMonth(y, m)
+	toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
+	if len(toBeAdded) == 0 && len(toBeDeleted) == 0 {
+		log.Debug("no update", zap.Any("existing", existingEvents), zap.Any("fetched", fetchedEvents))
+	}
 
-		events, err := cs.Events.List(data.CalendarID).ShowDeleted(false).SingleEvents(true).
-			TimeMin(time.Date(y, time.Month(m), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).
-			TimeMax(time.Date(nextY, time.Month(nextM), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).Do()
-		if err != nil {
-			log.Error("failed to load existing events from google calendar", zap.Error(err))
-			return err
-		}
-
-		existingEvents := event.NewEvents(events.Items)
-
-		fetchedEvents = fetchedEvents.Unique()
-
-		toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
-		if len(toBeAdded) == 0 && len(toBeDeleted) == 0 {
-			log.Debug("no update", zap.Int("year", y), zap.Int("month", m))
+	for _, e := range toBeAdded {
+		if e == nil {
 			continue
 		}
 
-		for _, e := range toBeAdded {
-			if e == nil {
-				continue
-			}
-
-			_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
-			if err != nil {
-				log.Error("failed to insert event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-			} else {
-				log.Debug("added new event", zap.Any("event", e))
-			}
+		_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
+		if err != nil {
+			log.Error("failed to insert event", zap.Error(err), zap.Any("event", e))
+		} else {
+			log.Info("added new event", zap.Any("event", e))
 		}
+	}
 
-		for _, e := range toBeDeleted {
-			if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
-				log.Error("failed to reset event", zap.Error(err), zap.Any("event", e), zap.Int("year", y), zap.Int("month", m))
-			} else {
-				log.Debug("deleted stale event", zap.Any("event", e))
-			}
+	for _, e := range toBeDeleted {
+		if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
+			log.Error("failed to reset event", zap.Any("event", e))
+		} else {
+			log.Info("deleted stale event", zap.Any("event", e))
 		}
-
-		y, m = nextY, nextM
 	}
 
 	return nil
@@ -121,4 +112,42 @@ func NextMonth(y, m int) (int, int) {
 	}
 
 	return nextY, nextM
+}
+
+func FetchEvents(tmpl string, y, m, rec int) (event.Events, error) {
+	events := event.Events{}
+	for i := 0; i < rec; i++ {
+		url := fmt.Sprintf(tmpl, y, m)
+
+		tmp, err := event.Fetch(url)
+		if err != nil {
+			return events, err
+		}
+
+		events = append(events, tmp...)
+		y, m = NextMonth(y, m)
+	}
+
+	return events.Unique(), nil
+}
+
+func ListExistingEvents(cs *calendar.Service, y, m, rec int, tz *time.Location, calendarID string) (event.Events, error) {
+	start := time.Date(y, time.Month(m), 1, 0, 0, 0, 0, tz).Format(time.RFC3339)
+	end := start
+
+	for i, tmpY, tmpM := 0, y, m; i < rec; i++ {
+		tmpY, tmpM = NextMonth(tmpY, tmpM)
+		fmt.Println(tmpY, tmpM)
+		end = time.Date(tmpY, time.Month(tmpM), 1, 0, 0, 0, 0, tz).Format(time.RFC3339)
+	}
+
+	events, err := cs.Events.List(calendarID).ShowDeleted(false).
+		SingleEvents(true).TimeMin(start).TimeMax(end).Do()
+	if err != nil {
+		return event.Events{}, err
+	}
+
+	e := event.NewEvents(events.Items)
+
+	return e.Unique(), nil
 }
