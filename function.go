@@ -16,7 +16,12 @@ import (
 )
 
 func Register(ctx context.Context, message *pubsub.Message) error {
-	log, err := logger.New()
+	c, err := config.Load()
+	if err != nil {
+		return err
+	}
+
+	log, err := logger.New(c.LogLevel)
 	if err != nil {
 		return err
 	}
@@ -24,12 +29,6 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	defer func() { _ = log.Sync() }()
 
 	log.Debug("logger is ready")
-
-	c, err := config.Load()
-	if err != nil {
-		log.Error("failed to load config", zap.Error(err))
-		return err
-	}
 
 	var data config.Data
 	if err := json.Unmarshal(message.Data, &data); err != nil {

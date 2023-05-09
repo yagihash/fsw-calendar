@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"go.uber.org/zap/zapcore"
+
 	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
 
@@ -24,7 +26,7 @@ func main() {
 }
 
 func realMain() int {
-	log, err := logger.New()
+	log, err := logger.New(zapcore.DebugLevel)
 	if err != nil {
 		return ExitError
 	}

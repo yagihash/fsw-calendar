@@ -31,7 +31,7 @@ func EncodeLevel(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 	}
 }
 
-func New() (*zap.Logger, error) {
+func New(level zapcore.Level) (*zap.Logger, error) {
 	encoderConfig := zap.NewProductionEncoderConfig()
 
 	encoderConfig.TimeKey = "time"
@@ -41,7 +41,7 @@ func New() (*zap.Logger, error) {
 	encoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder
 
 	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zap.DebugLevel)
+	cfg.Level.SetLevel(level)
 	cfg.EncoderConfig = encoderConfig
 
 	return cfg.Build()
