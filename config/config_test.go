@@ -4,12 +4,15 @@ import (
 	"os"
 	"testing"
 
+	"go.uber.org/zap/zapcore"
+
 	"github.com/google/go-cmp/cmp"
 )
 
 const (
 	EnvTimezone   = "TIMEZONE"
 	EnvRecurrence = "RECURRENCE"
+	EnvLogLevel   = "LOG_LEVEL"
 )
 
 func TestLoad(t *testing.T) {
@@ -24,10 +27,12 @@ func TestLoad(t *testing.T) {
 			input: map[string]string{
 				EnvTimezone:   "TEST_TIMEZONE",
 				EnvRecurrence: "10",
+				EnvLogLevel:   "DEBUG",
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
 				Recurrence: 10,
+				LogLevel:   zapcore.DebugLevel,
 			},
 			expectError: false,
 		},
@@ -35,10 +40,12 @@ func TestLoad(t *testing.T) {
 			name: "SuccessWithDefaultTimezone",
 			input: map[string]string{
 				EnvRecurrence: "10",
+				EnvLogLevel:   "FATAL",
 			},
 			want: &Config{
 				Timezone:   "Asia/Tokyo",
 				Recurrence: 10,
+				LogLevel:   zapcore.FatalLevel,
 			},
 			expectError: false,
 		},
@@ -46,10 +53,24 @@ func TestLoad(t *testing.T) {
 			name: "SuccessWithDefaultRecurrence",
 			input: map[string]string{
 				EnvTimezone: "TEST_TIMEZONE",
+				EnvLogLevel: "FATAL",
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
 				Recurrence: 2,
+				LogLevel:   zapcore.FatalLevel,
+			},
+			expectError: false,
+		},
+		{
+			name: "SuccessWithDefaultLogLevel",
+			input: map[string]string{
+				EnvTimezone:   "TEST_TIMEZONE",
+				EnvRecurrence: "10",
+			},
+			want: &Config{
+				Timezone:   "TEST_TIMEZONE",
+				Recurrence: 10,
 			},
 			expectError: false,
 		},
@@ -68,8 +89,8 @@ func TestLoad(t *testing.T) {
 
 			got, err := Load()
 
-			if err == nil && c.expectError {
-				t.Errorf("got an unexpected error: %v", err)
+			if c.expectError && err == nil {
+				t.Error("expected error but got nil")
 				return
 			}
 
