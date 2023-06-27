@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/logging v1.7.0
-	cloud.google.com/go/pubsub v1.31.0
+	cloud.google.com/go/pubsub v1.32.0
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/google/go-cmp v0.5.9
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -16,8 +16,8 @@ require (
 	cloud.google.com/go v0.110.2 // indirect
 	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/iam v1.0.1 // indirect
-	cloud.google.com/go/longrunning v0.4.1 // indirect
+	cloud.google.com/go/iam v1.1.0 // indirect
+	cloud.google.com/go/longrunning v0.4.2 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
