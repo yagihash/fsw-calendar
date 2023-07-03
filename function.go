@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/yagihash/fsw-calendar/client"
+
 	"cloud.google.com/go/pubsub"
 	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
@@ -121,7 +123,8 @@ func FetchEvents(tmpl string, y, m, rec int) (event.Events, error) {
 	for i := 0; i < rec; i++ {
 		url := fmt.Sprintf(tmpl, y, m)
 
-		tmp, err := event.Fetch(url)
+		c := client.New(url)
+		tmp, err := c.Fetch()
 		if err != nil {
 			return events, err
 		}
