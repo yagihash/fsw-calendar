@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/google/go-cmp v0.5.9
 	github.com/kelseyhightower/envconfig v1.4.0
-	go.uber.org/zap v1.24.0
+	go.uber.org/zap v1.25.0
 	google.golang.org/api v0.134.0
 )
 
@@ -25,10 +25,8 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.uber.org/atomic v1.10.0 // indirect
-	go.uber.org/multierr v1.8.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
