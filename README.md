@@ -14,6 +14,13 @@ You can import the calendars using iCal URLs below. Only listed categories are s
 
 Each calendar is updated every early morning. If the original schedule has changed, the calendar follows it behind 24 hours at maximum.
 
+The calendars are also available below.
+
+- [SS-4](https://calendar.google.com/calendar/embed?src=25dfc5f523279ce53fbeb5a90eecfe45b2bdc8fdbe8a17bbae28ee77a7f53753%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [T-4](https://calendar.google.com/calendar/embed?src=0a31d519fe9246513b2bc7937d0191d60058eb3c74ec8dea8481642331c48305%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [NS-4](https://calendar.google.com/calendar/embed?src=4860bb7c2c62bf60cd5264495d3e739e06d82eaf66fdfb6f0e3f77e053d1b6fe%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [S-4](https://calendar.google.com/calendar/embed?src=ccc748b5eb57fc6d8d01d2a380f7833225b347a54b816d23a5dbabb209f263b3%40group.calendar.google.com&ctz=Asia%2FTokyo)
+
 ## Disclaimer
 
 The calendars might become unavailable without any notice in advance.
