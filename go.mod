@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/logging v1.8.1
 	cloud.google.com/go/pubsub v1.33.0
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/zap v1.26.0
 	google.golang.org/api v0.146.0
