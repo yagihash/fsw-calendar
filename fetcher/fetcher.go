@@ -15,6 +15,13 @@ var (
 	urlTmpl = "https://%s/driving/sports/%s/%s/%d/%02d.html"
 )
 
+type DocEvent struct {
+	Date  string
+	Start string
+	End   string
+	Title string
+}
+
 type Client interface {
 	Get(url string) (*http.Response, error)
 }
@@ -24,13 +31,6 @@ type Fetcher struct {
 	course     course.Course
 	class      class.Class
 	httpclient Client
-}
-
-type DocEvent struct {
-	Date  string
-	Start string
-	End   string
-	Title string
 }
 
 func New(hostname string, course course.Course, class class.Class, c Client) *Fetcher {

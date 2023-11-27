@@ -1,14 +1,6 @@
 package event
 
-import (
-	"fmt"
-	"net/http"
-	"strings"
-
-	"google.golang.org/api/calendar/v3"
-
-	"github.com/PuerkitoBio/goquery"
-)
+import "google.golang.org/api/calendar/v3"
 
 type Events []*Event
 
@@ -59,31 +51,4 @@ func (es Events) Unique() (unique Events) {
 	}
 
 	return
-}
-
-func Fetch(url string) (Events, error) {
-	var events []*Event
-
-	res, err := http.Get(url)
-	if err != nil {
-		return events, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return events, fmt.Errorf("status code error: %s", res.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return events, err
-	}
-
-	doc.Find("#table-calendar > tbody > tr.row-rc > td.type > div > p").Each(func(i int, s *goquery.Selection) {
-		d, _ := s.Parent().Parent().Parent().Attr("data-date")
-		t := strings.Split(doc.Find("#table-calendar > tbody > tr.row-rc > td.time > div > p").Eq(i).Text(), "~")
-		events = append(events, New(d, t[0], t[1], s.Text()))
-	})
-
-	return events, nil
 }

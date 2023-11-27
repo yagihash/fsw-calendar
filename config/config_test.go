@@ -13,6 +13,7 @@ const (
 	EnvTimezone   = "TIMEZONE"
 	EnvRecurrence = "RECURRENCE"
 	EnvLogLevel   = "LOG_LEVEL"
+	EnvHostname   = "HOSTNAME"
 )
 
 func TestLoad(t *testing.T) {
@@ -28,11 +29,13 @@ func TestLoad(t *testing.T) {
 				EnvTimezone:   "TEST_TIMEZONE",
 				EnvRecurrence: "10",
 				EnvLogLevel:   "DEBUG",
+				EnvHostname:   "example.com",
 			},
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
 				Recurrence: 10,
 				LogLevel:   zapcore.DebugLevel,
+				Hostname:   "example.com",
 			},
 			expectError: false,
 		},
@@ -46,6 +49,7 @@ func TestLoad(t *testing.T) {
 				Timezone:   "Asia/Tokyo",
 				Recurrence: 10,
 				LogLevel:   zapcore.FatalLevel,
+				Hostname:   "www.fsw.tv",
 			},
 			expectError: false,
 		},
@@ -59,6 +63,7 @@ func TestLoad(t *testing.T) {
 				Timezone:   "TEST_TIMEZONE",
 				Recurrence: 2,
 				LogLevel:   zapcore.FatalLevel,
+				Hostname:   "www.fsw.tv",
 			},
 			expectError: false,
 		},
@@ -71,6 +76,7 @@ func TestLoad(t *testing.T) {
 			want: &Config{
 				Timezone:   "TEST_TIMEZONE",
 				Recurrence: 10,
+				Hostname:   "www.fsw.tv",
 			},
 			expectError: false,
 		},
