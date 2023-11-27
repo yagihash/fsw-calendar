@@ -5,29 +5,33 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yagihash/fsw-calendar/fetcher"
+
 	"google.golang.org/api/calendar/v3"
 )
-
-const tz = "Asia/Tokyo"
 
 type Event struct {
 	*calendar.Event
 }
 
-func New(d, s, e, title string) *Event {
+func New(date, start, end, title string) *Event {
 	template := "%sT%s:00+09:00"
 
 	return &Event{
 		&calendar.Event{
 			Summary: title,
 			Start: &calendar.EventDateTime{
-				DateTime: fmt.Sprintf(template, d, strings.TrimPrefix(s, "0")),
+				DateTime: fmt.Sprintf(template, date, strings.TrimPrefix(start, "0")),
 			},
 			End: &calendar.EventDateTime{
-				DateTime: fmt.Sprintf(template, d, strings.TrimPrefix(e, "0")),
+				DateTime: fmt.Sprintf(template, date, strings.TrimPrefix(end, "0")),
 			},
 		},
 	}
+}
+
+func NewFromDocEvent(d fetcher.DocEvent) *Event {
+	return New(d.Date, d.Start, d.End, d.Title)
 }
 
 func (e *Event) Equals(c *Event) bool {

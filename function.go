@@ -3,8 +3,10 @@ package function
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"net/http"
 	"time"
+
+	"github.com/yagihash/fsw-calendar/fetcher"
 
 	"cloud.google.com/go/pubsub"
 	"go.uber.org/zap"
@@ -44,19 +46,35 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	y := time.Now().In(jst).Year()
 	m := int(time.Now().In(jst).Month())
 
-	fetchedEvents, err := FetchEvents(data.URL, y, m, c.Recurrence)
-	if err != nil {
-		log.Error(
-			"failed to fetch schedule data",
-			zap.Error(err),
-			zap.String("url", data.URL),
-			zap.Int("y", y),
-			zap.Int("m", m),
-			zap.Int("recurrence", c.Recurrence),
-		)
+	f := fetcher.New(c.Hostname, data.Course, data.Class, http.DefaultClient)
+	var docEvents []fetcher.DocEvent
+
+	for i := 0; i < c.Recurrence; i++ {
+		tmp, err := f.FetchDocEvents(y, m)
+		if err != nil {
+			log.Error(
+				"failed to fetch schedule data",
+				zap.Error(err),
+				zap.String("hostname", c.Hostname),
+				zap.Stringer("course", data.Course),
+				zap.Stringer("class", data.Class),
+				zap.Int("y", y),
+				zap.Int("m", m),
+				zap.Int("recurrence", c.Recurrence),
+			)
+		}
+
+		docEvents = append(docEvents, tmp...)
+
+		y, m = NextMonth(y, m)
 	}
 
-	log.Info("loaded schedules", zap.Any("events", fetchedEvents))
+	log.Info("loaded schedules", zap.Any("events", docEvents))
+
+	var fetchedEvents event.Events
+	for _, d := range docEvents {
+		fetchedEvents = append(fetchedEvents, event.NewFromDocEvent(d))
+	}
 
 	cs, err := calendar.NewService(ctx)
 	if err != nil {
@@ -114,23 +132,6 @@ func NextMonth(y, m int) (int, int) {
 	}
 
 	return nextY, nextM
-}
-
-func FetchEvents(tmpl string, y, m, rec int) (event.Events, error) {
-	events := event.Events{}
-	for i := 0; i < rec; i++ {
-		url := fmt.Sprintf(tmpl, y, m)
-
-		tmp, err := event.Fetch(url)
-		if err != nil {
-			return events, err
-		}
-
-		events = append(events, tmp...)
-		y, m = NextMonth(y, m)
-	}
-
-	return events.Unique(), nil
 }
 
 func ListExistingEvents(cs *calendar.Service, y, m, rec int, tz *time.Location, calendarID string) (event.Events, error) {

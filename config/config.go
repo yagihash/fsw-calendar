@@ -9,6 +9,7 @@ type Config struct {
 	Timezone   string        `envconfig:"TIMEZONE" default:"Asia/Tokyo"`
 	Recurrence int           `envconfig:"RECURRENCE" default:"2"`
 	LogLevel   zapcore.Level `envconfig:"LOG_LEVEL" default:"INFO"`
+	Hostname   string        `envconfig:"HOSTNAME" default:"www.fsw.tv"`
 }
 
 func Load() (*Config, error) {
