@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yagihash/fsw-calendar/fetcher"
-
 	"cloud.google.com/go/pubsub"
 	"go.uber.org/zap"
 	"google.golang.org/api/calendar/v3"
 
 	"github.com/yagihash/fsw-calendar/config"
 	"github.com/yagihash/fsw-calendar/event"
+	"github.com/yagihash/fsw-calendar/fetcher"
 	"github.com/yagihash/fsw-calendar/logger"
 )
 
