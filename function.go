@@ -36,6 +36,8 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		log.Error("failed to unmarshal message", zap.Error(err), zap.Any("data", message.Data))
 	}
 
+	log.Info("received data", zap.Any("data", data))
+
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
 		log.Error("failed to load timezone", zap.Error(err))
