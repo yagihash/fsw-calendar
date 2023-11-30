@@ -68,6 +68,10 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		y, m = NextMonth(y, m)
 	}
 
+	// fixme: too poor...
+	y = time.Now().In(jst).Year()
+	m = int(time.Now().In(jst).Month())
+
 	log.Info("loaded schedules", zap.Any("events", docEvents))
 
 	var fetchedEvents event.Events
