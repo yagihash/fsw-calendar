@@ -30,6 +30,6 @@ func TestData_UnmarshalJSON(t *testing.T) {
 	}
 
 	if diff := cmp.Diff(got, want, opt); diff != "" {
-		fmt.Errorf("got unexpected diff:\n%s", diff)
+		t.Errorf("got unexpected diff:\n%s", diff)
 	}
 }

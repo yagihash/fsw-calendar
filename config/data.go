@@ -42,5 +42,7 @@ func (d *Data) UnmarshalJSON(b []byte) error {
 		d.Class = class.Unknown
 	}
 
+	d.CalendarID = tmp["calendar_id"]
+
 	return nil
 }
