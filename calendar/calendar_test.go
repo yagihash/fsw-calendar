@@ -1,4 +1,4 @@
-package function
+package calendar
 
 import (
 	"testing"

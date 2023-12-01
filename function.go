@@ -8,8 +8,8 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"go.uber.org/zap"
-	"google.golang.org/api/calendar/v3"
 
+	"github.com/yagihash/fsw-calendar/calendar"
 	"github.com/yagihash/fsw-calendar/config"
 	"github.com/yagihash/fsw-calendar/event"
 	"github.com/yagihash/fsw-calendar/fetcher"
@@ -65,7 +65,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 		docEvents = append(docEvents, tmp...)
 
-		y, m = NextMonth(y, m)
+		y, m = calendar.NextMonth(y, m)
 	}
 
 	// fixme: too poor...
@@ -79,13 +79,13 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		fetchedEvents = append(fetchedEvents, event.NewFromDocEvent(d))
 	}
 
-	cs, err := calendar.NewService(ctx)
+	cs, err := calendar.New(ctx, data.CalendarID, jst)
 	if err != nil {
-		log.Error("failed to access google calendar API", zap.Error(err))
+		log.Error("failed to initialize calendar service", zap.Error(err))
 		return err
 	}
 
-	existingEvents, err := ListExistingEvents(cs, y, m, c.Recurrence, jst, data.CalendarID)
+	existingEvents, err := cs.GetEvents(y, m, c.Recurrence)
 	if err != nil {
 		log.Error("failed to load existing events from google calendar", zap.Error(err))
 		return err
@@ -104,8 +104,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 			continue
 		}
 
-		_, err := cs.Events.Insert(data.CalendarID, e.Event).Do()
-		if err != nil {
+		if err := cs.Insert(e.Event); err != nil {
 			log.Error("failed to insert event", zap.Error(err), zap.Any("event", e))
 		} else {
 			log.Debug("added new event", zap.Any("event", e))
@@ -113,46 +112,12 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	}
 
 	for _, e := range toBeDeleted {
-		if err := cs.Events.Delete(data.CalendarID, e.Id).Do(); err != nil {
-			log.Error("failed to reset event", zap.Any("event", e))
+		if err := cs.Delete(e.Id); err != nil {
+			log.Error("failed to delete event", zap.Any("event", e))
 		} else {
 			log.Debug("deleted stale event", zap.Any("event", e))
 		}
 	}
 
 	return nil
-}
-
-func NextMonth(y, m int) (int, int) {
-	var nextY, nextM int
-
-	if m == 12 {
-		nextY = y + 1
-		nextM = 1
-	} else {
-		nextY = y
-		nextM = m + 1
-	}
-
-	return nextY, nextM
-}
-
-func ListExistingEvents(cs *calendar.Service, y, m, rec int, tz *time.Location, calendarID string) (event.Events, error) {
-	start := time.Date(y, time.Month(m), 1, 0, 0, 0, 0, tz).Format(time.RFC3339)
-	end := start
-
-	for i, tmpY, tmpM := 0, y, m; i < rec; i++ {
-		tmpY, tmpM = NextMonth(tmpY, tmpM)
-		end = time.Date(tmpY, time.Month(tmpM), 1, 0, 0, 0, 0, tz).Format(time.RFC3339)
-	}
-
-	events, err := cs.Events.List(calendarID).ShowDeleted(false).
-		SingleEvents(true).TimeMin(start).TimeMax(end).Do()
-	if err != nil {
-		return event.Events{}, err
-	}
-
-	e := event.NewEvents(events.Items)
-
-	return e.Unique(), nil
 }
