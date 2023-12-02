@@ -33,8 +33,10 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 
 	var data config.Data
 	if err := json.Unmarshal(message.Data, &data); err != nil {
-		log.Error("failed to unmarshal message", zap.Error(err), zap.Any("data", message.Data))
+		log.Error("failed to unmarshal message", zap.Error(err))
 	}
+
+	log.Info("start processing received data", zap.Any("data", data))
 
 	jst, err := time.LoadLocation(c.Timezone)
 	if err != nil {
