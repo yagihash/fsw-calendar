@@ -46,31 +46,11 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	m := int(time.Now().In(jst).Month())
 
 	f := fetcher.New(c.Hostname, data.Course, data.Class, http.DefaultClient)
-	var docEvents []fetcher.DocEvent
 
-	for i := 0; i < c.Recurrence; i++ {
-		tmp, err := f.FetchDocEvents(y, m)
-		if err != nil {
-			log.Error(
-				"failed to fetch schedule data",
-				zap.Error(err),
-				zap.String("hostname", c.Hostname),
-				zap.Stringer("course", data.Course),
-				zap.Stringer("class", data.Class),
-				zap.Int("y", y),
-				zap.Int("m", m),
-				zap.Int("recurrence", c.Recurrence),
-			)
-		}
-
-		docEvents = append(docEvents, tmp...)
-
-		y, m = calendar.NextMonth(y, m)
+	docEvents, err := f.FetchDocEvents(y, m, c.Recurrence)
+	if err != nil {
+		log.Error("failed to fetch schedule data", zap.Error(err))
 	}
-
-	// fixme: too poor...
-	y = time.Now().In(jst).Year()
-	m = int(time.Now().In(jst).Month())
 
 	log.Info("loaded schedules", zap.Any("events", docEvents))
 

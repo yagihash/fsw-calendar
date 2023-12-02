@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/yagihash/fsw-calendar/event"
+	"github.com/yagihash/fsw-calendar/utils"
 
 	"google.golang.org/api/calendar/v3"
 )
@@ -35,7 +36,7 @@ func (cal *Calendar) GetEvents(y, m, length int) (event.Events, error) {
 	end := start
 
 	for i, tmpY, tmpM := 0, y, m; i < length; i++ {
-		tmpY, tmpM = NextMonth(tmpY, tmpM)
+		tmpY, tmpM = utils.NextMonth(tmpY, tmpM)
 		end = time.Date(tmpY, time.Month(tmpM), 1, 0, 0, 0, 0, cal.tz).Format(time.RFC3339)
 	}
 
@@ -57,18 +58,4 @@ func (cal *Calendar) Insert(e *calendar.Event) error {
 
 func (cal *Calendar) Delete(EventID string) error {
 	return cal.cs.Events.Delete(cal.calendarID, EventID).Do()
-}
-
-func NextMonth(y, m int) (int, int) {
-	var nextY, nextM int
-
-	if m == 12 {
-		nextY = y + 1
-		nextM = 1
-	} else {
-		nextY = y
-		nextM = m + 1
-	}
-
-	return nextY, nextM
 }
