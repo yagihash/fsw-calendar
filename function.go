@@ -54,7 +54,7 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 		log.Error("failed to fetch schedule data", zap.Error(err))
 	}
 
-	log.Info("loaded schedules", zap.Any("events", docEvents))
+	log.Debug("loaded schedules", zap.Any("events", docEvents))
 
 	var fetchedEvents event.Events
 	for _, d := range docEvents {
