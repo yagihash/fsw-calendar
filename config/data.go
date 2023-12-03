@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 
+	"go.uber.org/zap/zapcore"
+
 	"github.com/yagihash/fsw-calendar/fetcher/class"
 	"github.com/yagihash/fsw-calendar/fetcher/course"
 )
@@ -44,5 +46,12 @@ func (d *Data) UnmarshalJSON(b []byte) error {
 
 	d.CalendarID = tmp["calendar_id"]
 
+	return nil
+}
+
+func (d *Data) MarshalLogObject(e zapcore.ObjectEncoder) error {
+	e.AddString("calendar_id", d.CalendarID)
+	e.AddString("course", d.Course.String())
+	e.AddString("class", d.Class.String())
 	return nil
 }

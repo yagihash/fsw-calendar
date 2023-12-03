@@ -9,6 +9,7 @@ import (
 
 	"github.com/yagihash/fsw-calendar/fetcher/class"
 	"github.com/yagihash/fsw-calendar/fetcher/course"
+	"github.com/yagihash/fsw-calendar/utils"
 )
 
 var (
@@ -42,31 +43,36 @@ func New(hostname string, course course.Course, class class.Class, c Client) *Fe
 	}
 }
 
-func (f *Fetcher) FetchDocEvents(y, m int) ([]DocEvent, error) {
+func (f *Fetcher) FetchDocEvents(y, m, length int) ([]DocEvent, error) {
 	var rawEvents []DocEvent
 
-	url := fmt.Sprintf(urlTmpl, f.hostname, f.course, f.class, y, m)
+	for i := 0; i < length; i++ {
+		url := fmt.Sprintf(urlTmpl, f.hostname, f.course, f.class, y, m)
 
-	res, err := f.httpclient.Get(url)
-	if err != nil {
-		return rawEvents, fmt.Errorf("failed to fetch raw events from %s: %w", url, err)
+		res, err := f.httpclient.Get(url)
+		if err != nil {
+			return rawEvents, fmt.Errorf("failed to fetch raw events from %s: %w", url, err)
+		}
+
+		if res.StatusCode != http.StatusOK {
+			return rawEvents, fmt.Errorf("got status code %d on %s", res.StatusCode, url)
+		}
+
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			return rawEvents, fmt.Errorf("failed to initialize document reader: %w", err)
+		}
+
+		doc.Find("#table-calendar > tbody > tr.row-rc > td.type > div > p").Each(func(i int, s *goquery.Selection) {
+			d, _ := s.Parent().Parent().Parent().Attr("data-date")
+			t := strings.Split(doc.Find("#table-calendar > tbody > tr.row-rc > td.time > div > p").Eq(i).Text(), "~")
+			rawEvents = append(rawEvents, DocEvent{d, t[0], t[1], s.Text()})
+		})
+
+		y, m = utils.NextMonth(y, m)
+
+		_ = res.Body.Close()
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return rawEvents, fmt.Errorf("got status code %d on %s", res.StatusCode, url)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return rawEvents, fmt.Errorf("failed to initialize document reader: %w", err)
-	}
-
-	doc.Find("#table-calendar > tbody > tr.row-rc > td.type > div > p").Each(func(i int, s *goquery.Selection) {
-		d, _ := s.Parent().Parent().Parent().Attr("data-date")
-		t := strings.Split(doc.Find("#table-calendar > tbody > tr.row-rc > td.time > div > p").Eq(i).Text(), "~")
-		rawEvents = append(rawEvents, DocEvent{d, t[0], t[1], s.Text()})
-	})
 
 	return rawEvents, nil
 }
