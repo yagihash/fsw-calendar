@@ -54,6 +54,11 @@ func (f *Fetcher) FetchDocEvents(y, m, length int) ([]DocEvent, error) {
 			return rawEvents, fmt.Errorf("failed to fetch raw events from %s: %w", url, err)
 		}
 
+		// Even if the schedule for the next month or later is not public, it is not the error.
+		if i != 0 && res.StatusCode == http.StatusNotFound {
+			return rawEvents, nil
+		}
+
 		if res.StatusCode != http.StatusOK {
 			return rawEvents, fmt.Errorf("got status code %d on %s", res.StatusCode, url)
 		}

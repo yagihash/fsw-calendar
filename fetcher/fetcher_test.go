@@ -68,6 +68,42 @@ func TestFetcher_FetchDocEvents(t *testing.T) {
 			t.Errorf("got an unexpected error: %v", err)
 		}
 	})
+
+	t.Run("no error http not found on next month schedule", func(t *testing.T) {
+		c := NewTestClient(func(req *http.Request) *http.Response {
+			switch req.URL.Path {
+			case "/driving/sports/rc/t-4/2023/11.html":
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Body:       io.NopCloser(bytes.NewBuffer([]byte("<table id=\"table-calendar\"><tbody><tr id=\"2023-11-2\" class=\"row-rc is-show\" data-date=\"2023-11-02\"><td class=\"day this-month thu\" data-date=\"2023/11/02\"><div class=\"inner-table-cell\">2<span class=\"yobi\">（木<span class=\"holiday-text\"></span>）</span></div></td><td class=\"type\"><div class=\"rc\"><p class=\"cell\">T-4 X</p></div></td><td class=\"time\"><div class=\"rc\"><p class=\"cell\">15:20~15:50</p></div></td><td class=\"wait\"><div class=\"rc\"><p class=\"cell\">30分</p></div></td></tr></tbody></table>"))),
+					Header:     make(http.Header),
+				}
+			case "/driving/sports/rc/t-4/2023/12.html":
+				return &http.Response{
+					StatusCode: http.StatusNotFound,
+					Body:       io.NopCloser(bytes.NewBuffer([]byte(""))),
+					Header:     make(http.Header),
+				}
+			default:
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Body:       io.NopCloser(bytes.NewBuffer([]byte(""))),
+					Header:     make(http.Header),
+				}
+			}
+		})
+		f := New("example.com", course.RC, class.T4, c)
+		got, err := f.FetchDocEvents(2023, 11, 2)
+		want := []DocEvent{{Date: "2023-11-02", Start: "15:20", End: "15:50", Title: "T-4 X"}}
+
+		if err != nil {
+			t.Errorf("got an unexpexted error: %v", err)
+		}
+
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Errorf("got unexpected diff:\n%s", diff)
+		}
+	})
 }
 
 type RoundTripFunc func(req *http.Request) *http.Response
