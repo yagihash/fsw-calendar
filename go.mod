@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/zap v1.27.0
-	google.golang.org/api v0.168.0
+	google.golang.org/api v0.169.0
 )
 
 require (
