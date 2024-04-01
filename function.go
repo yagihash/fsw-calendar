@@ -3,6 +3,7 @@ package function
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -14,9 +15,10 @@ import (
 	"github.com/yagihash/fsw-calendar/event"
 	"github.com/yagihash/fsw-calendar/fetcher"
 	"github.com/yagihash/fsw-calendar/logger"
+	"github.com/yagihash/fsw-calendar/notify/slack"
 )
 
-func Register(ctx context.Context, message *pubsub.Message) error {
+func Register(ctx context.Context, message *pubsub.Message) (err error) {
 	c, err := config.Load()
 	if err != nil {
 		return err
@@ -30,6 +32,13 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 	defer func() { _ = log.Sync() }()
 
 	log.Debug("logger is ready")
+
+	notify := slack.New(c.Webhook)
+	defer func() {
+		if err != nil {
+			_ = notify.Warn(context.Background(), fmt.Sprintf("error: %s", err.Error()))
+		}
+	}()
 
 	var data config.Data
 	if err := json.Unmarshal(message.Data, &data); err != nil {
@@ -100,6 +109,8 @@ func Register(ctx context.Context, message *pubsub.Message) error {
 			log.Debug("deleted stale event", zap.Any("event", e))
 		}
 	}
+
+	_ = notify.Info(ctx, "updated calendar")
 
 	return nil
 }
