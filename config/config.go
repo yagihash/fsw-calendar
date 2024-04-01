@@ -10,6 +10,7 @@ type Config struct {
 	Recurrence int           `envconfig:"RECURRENCE" default:"2"`
 	LogLevel   zapcore.Level `envconfig:"LOG_LEVEL" default:"INFO"`
 	Hostname   string        `envconfig:"HOSTNAME" default:"www.fsw.tv"`
+	Webhook    string        `envconfig:"SLACK_WEBHOOK"`
 }
 
 func Load() (*Config, error) {
