@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/pubsub"
@@ -110,7 +111,7 @@ func Register(ctx context.Context, message *pubsub.Message) (err error) {
 		}
 	}
 
-	_ = notify.Info(ctx, "updated calendar")
+	_ = notify.Info(ctx, fmt.Sprintf("updated calendar (%s)", strings.ToUpper(data.Class.String())))
 
 	return nil
 }
