@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/logging v1.10.0
-	cloud.google.com/go/pubsub v1.38.0
+	cloud.google.com/go/pubsub v1.39.0
 	github.com/PuerkitoBio/goquery v1.9.2
 	github.com/google/go-cmp v0.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
