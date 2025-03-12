@@ -1,12 +1,14 @@
 module github.com/yagihash/fsw-calendar
 
-go 1.19
+go 1.21
+
+toolchain go1.24.1
 
 require (
 	cloud.google.com/go/logging v1.11.0
 	cloud.google.com/go/pubsub v1.41.0
 	github.com/PuerkitoBio/goquery v1.9.2
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/slack-go/slack v0.16.0
 	go.uber.org/zap v1.27.0
