@@ -8,5 +8,5 @@ steps:
       - --region=asia-northeast1
       - --source=.
       - --trigger-topic=fsw-calendar
-      - --runtime=go121
+      - --runtime=go125
       - --entry-point=Register
