@@ -3,6 +3,11 @@
   "extends": [
     "config:base"
   ],
+  "packageRules": [
+    {
+      "updateTypes": ["digest"]
+    }
+  ],
   "postUpdateOptions": [
     "gomodTidy"
   ],
