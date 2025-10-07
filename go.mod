@@ -2,7 +2,7 @@ module github.com/yagihash/fsw-calendar
 
 go 1.24.0
 
-toolchain go1.25.1
+toolchain go1.25.2
 
 require (
 	cloud.google.com/go/logging v1.13.0
