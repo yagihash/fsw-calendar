@@ -19,6 +19,8 @@ cloud.google.com/go/pubsub v1.50.0 h1:hnYpOIxVlgVD1Z8LN7est4DQZK3K6tvZNurZjIVjUe
 cloud.google.com/go/pubsub v1.50.0/go.mod h1:Di2Y+nqXBpIS+dXUEJPQzLh8PbIQZMLE9IVUFhf2zmM=
 cloud.google.com/go/pubsub/v2 v2.1.0 h1:FLUDATKgCg1iUC+c9+m4JlsUxajEtc7L1Ynu3acrzww=
 cloud.google.com/go/pubsub/v2 v2.1.0/go.mod h1:O5f0KHG9zDheZAd3z5rlCRhxt2JQtB+t/IYLKK3Bpvw=
+cloud.google.com/go/pubsub/v2 v2.2.0 h1:UmvGMvIMhQOouXbVpIFRHEUHXsnaGjSTo2XAqk85u2s=
+cloud.google.com/go/pubsub/v2 v2.2.0/go.mod h1:O5f0KHG9zDheZAd3z5rlCRhxt2JQtB+t/IYLKK3Bpvw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/PuerkitoBio/goquery v1.10.3 h1:pFYcNSqHxBD06Fpj/KsbStFRsgRATgnf3LeXiUkhzPo=
 github.com/PuerkitoBio/goquery v1.10.3/go.mod h1:tMUX0zDMHXYlAQk6p35XxQMqMweEKB7iK7iLNd4RH4Y=
