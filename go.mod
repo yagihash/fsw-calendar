@@ -7,6 +7,7 @@ toolchain go1.25.2
 require (
 	cloud.google.com/go/logging v1.13.0
 	cloud.google.com/go/pubsub v1.50.0
+	cloud.google.com/go/pubsub/v2 v2.2.0
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/google/go-cmp v0.7.0
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -22,7 +23,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
-	cloud.google.com/go/pubsub/v2 v2.1.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
