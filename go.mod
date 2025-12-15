@@ -6,7 +6,7 @@ toolchain go1.25.5
 
 require (
 	cloud.google.com/go/logging v1.13.1
-	cloud.google.com/go/pubsub v1.50.0
+	cloud.google.com/go/pubsub v1.50.1
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/google/go-cmp v0.7.0
 	github.com/kelseyhightower/envconfig v1.4.0
