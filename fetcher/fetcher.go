@@ -53,6 +53,7 @@ func (f *Fetcher) FetchDocEvents(y, m, length int) ([]DocEvent, error) {
 		if err != nil {
 			return rawEvents, fmt.Errorf("failed to fetch raw events from %s: %w", url, err)
 		}
+		defer res.Body.Close()
 
 		// Even if the schedule for the next month or later is not public, it is not the error.
 		if i != 0 && res.StatusCode == http.StatusNotFound {
@@ -71,12 +72,13 @@ func (f *Fetcher) FetchDocEvents(y, m, length int) ([]DocEvent, error) {
 		doc.Find("#table-calendar > tbody > tr.row-rc > td.type > div > p").Each(func(i int, s *goquery.Selection) {
 			d, _ := s.Parent().Parent().Parent().Attr("data-date")
 			t := strings.Split(doc.Find("#table-calendar > tbody > tr.row-rc > td.time > div > p").Eq(i).Text(), "~")
+			if len(t) < 2 {
+				return
+			}
 			rawEvents = append(rawEvents, DocEvent{d, t[0], t[1], s.Text()})
 		})
 
 		y, m = utils.NextMonth(y, m)
-
-		_ = res.Body.Close()
 	}
 
 	return rawEvents, nil

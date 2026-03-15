@@ -14,15 +14,31 @@ func NewEvents(items []*calendar.Event) Events {
 	return events
 }
 
-func (es Events) Diff(another Events) (negative, positive Events) {
+func (es Events) Diff(another Events) (negative, positive Events, err error) {
 	for _, e := range another {
-		if !(es.Has(e) || negative.Has(e)) {
+		has, err := es.Has(e)
+		if err != nil {
+			return nil, nil, err
+		}
+		negHas, err := negative.Has(e)
+		if err != nil {
+			return nil, nil, err
+		}
+		if !(has || negHas) {
 			negative = append(negative, e)
 		}
 	}
 
 	for _, e := range es {
-		if !(another.Has(e) || positive.Has(e)) {
+		has, err := another.Has(e)
+		if err != nil {
+			return nil, nil, err
+		}
+		posHas, err := positive.Has(e)
+		if err != nil {
+			return nil, nil, err
+		}
+		if !(has || posHas) {
 			positive = append(positive, e)
 		}
 	}
@@ -30,25 +46,32 @@ func (es Events) Diff(another Events) (negative, positive Events) {
 	return
 }
 
-func (es Events) Has(b *Event) bool {
+func (es Events) Has(b *Event) (bool, error) {
 	for _, a := range es {
-		if a.Equals(b) {
-			return true
+		ok, err := a.Equals(b)
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func (es Events) Unique() (unique Events) {
+func (es Events) Unique() (Events, error) {
+	var unique Events
 	for i, e := range es {
 		// note: used in the case that the original calendar is broken. no need to ensure uniqueness seriously.
-		if es[i+1:].Has(e) {
-			// do nothing
-		} else {
+		has, err := es[i+1:].Has(e)
+		if err != nil {
+			return nil, err
+		}
+		if !has {
 			unique = append(unique, e)
 		}
 	}
 
-	return
+	return unique, nil
 }

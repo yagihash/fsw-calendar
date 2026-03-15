@@ -13,6 +13,7 @@ import (
 	"github.com/yagihash/fsw-calendar/config"
 	"github.com/yagihash/fsw-calendar/event"
 	"github.com/yagihash/fsw-calendar/logger"
+	"github.com/yagihash/fsw-calendar/utils"
 )
 
 const (
@@ -63,7 +64,7 @@ func realMain() int {
 			return ExitError
 		}
 
-		nextY, nextM := NextMonth(y, m)
+		nextY, nextM := utils.NextMonth(y, m)
 
 		events, err := cs.Events.List(calendarID).ShowDeleted(false).SingleEvents(true).
 			TimeMin(time.Date(y, time.Month(m), 1, 0, 0, 0, 0, jst).Format(time.RFC3339)).
@@ -89,16 +90,3 @@ func realMain() int {
 	return ExitOK
 }
 
-func NextMonth(y, m int) (int, int) {
-	var nextY, nextM int
-
-	if m == 12 {
-		nextY = y + 1
-		nextM = 1
-	} else {
-		nextY = y
-		nextM = m + 1
-	}
-
-	return nextY, nextM
-}

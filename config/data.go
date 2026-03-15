@@ -12,7 +12,7 @@ import (
 type Data struct {
 	CalendarID string        `json:"calendar_id"`
 	Course     course.Course `json:"course"`
-	Class      class.Class   `json:"class""`
+	Class      class.Class   `json:"class"`
 }
 
 func (d *Data) UnmarshalJSON(b []byte) error {
