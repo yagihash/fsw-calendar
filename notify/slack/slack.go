@@ -5,7 +5,11 @@ import (
 	"fmt"
 
 	goslack "github.com/slack-go/slack"
+
+	"github.com/yagihash/fsw-calendar/notify"
 )
+
+var _ notify.Notifier = (*Slack)(nil)
 
 const (
 	notifierType = "slack"

@@ -34,26 +34,26 @@ func NewFromDocEvent(d fetcher.DocEvent) *Event {
 	return New(d.Date, d.Start, d.End, d.Title)
 }
 
-func (e *Event) Equals(c *Event) bool {
+func (e *Event) Equals(c *Event) (bool, error) {
 	es, err := time.Parse(time.RFC3339, e.Start.DateTime)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("invalid start datetime of event %q: %w", e.Summary, err)
 	}
 
 	ee, err := time.Parse(time.RFC3339, e.End.DateTime)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("invalid end datetime of event %q: %w", e.Summary, err)
 	}
 
 	cs, err := time.Parse(time.RFC3339, c.Start.DateTime)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("invalid start datetime of event %q: %w", c.Summary, err)
 	}
 
 	ce, err := time.Parse(time.RFC3339, c.End.DateTime)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("invalid end datetime of event %q: %w", c.Summary, err)
 	}
 
-	return e.Summary == c.Summary && es.Equal(cs) && ee.Equal(ce)
+	return e.Summary == c.Summary && es.Equal(cs) && ee.Equal(ce), nil
 }

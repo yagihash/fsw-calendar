@@ -42,8 +42,9 @@ func Register(ctx context.Context, message *pubsub.Message) (err error) {
 	}()
 
 	var data config.Data
-	if err := json.Unmarshal(message.Data, &data); err != nil {
+	if err = json.Unmarshal(message.Data, &data); err != nil {
 		log.Error("failed to unmarshal message", zap.Error(err))
+		return err
 	}
 
 	log.Info("start processing received data", zap.Any("data", data))
@@ -62,6 +63,7 @@ func Register(ctx context.Context, message *pubsub.Message) (err error) {
 	docEvents, err := f.FetchDocEvents(y, m, c.Recurrence)
 	if err != nil {
 		log.Error("failed to fetch schedule data", zap.Error(err))
+		return err
 	}
 
 	log.Debug("loaded schedules", zap.Any("events", docEvents))
@@ -83,7 +85,11 @@ func Register(ctx context.Context, message *pubsub.Message) (err error) {
 		return err
 	}
 
-	toBeAdded, toBeDeleted := existingEvents.Diff(fetchedEvents)
+	toBeAdded, toBeDeleted, err := existingEvents.Diff(fetchedEvents)
+	if err != nil {
+		log.Error("failed to diff events", zap.Error(err))
+		return err
+	}
 	if len(toBeAdded) == 0 && len(toBeDeleted) == 0 {
 		log.Debug("no update", zap.Any("existing", existingEvents), zap.Any("fetched", fetchedEvents))
 		return nil

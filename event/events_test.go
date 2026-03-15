@@ -10,32 +10,35 @@ import (
 )
 
 var (
+	jst = time.FixedZone("JST", 9*60*60)
+	t0  = time.Date(2025, 1, 1, 9, 0, 0, 0, jst)
+
 	A = &Event{
 		&calendar.Event{
 			Summary: "A",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(25 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 	B = &Event{
 		&calendar.Event{
 			Summary: "B",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(60 * time.Minute).Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(85 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Add(60 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(85 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 	C = &Event{
 		&calendar.Event{
 			Summary: "C",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(120 * time.Minute).Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(145 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Add(120 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(145 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 	D = &Event{
 		&calendar.Event{
 			Summary: "D",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(180 * time.Minute).Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(205 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Add(180 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(205 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 
@@ -43,13 +46,13 @@ var (
 		&calendar.Event{
 			Summary: "eventBrokenDateTime",
 			Start:   &calendar.EventDateTime{DateTime: "---"},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(25 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 	eventBrokenEndDateTime = &Event{
 		&calendar.Event{
 			Summary: "eventBrokenDateTime",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Format(time.RFC3339)},
 			End:     &calendar.EventDateTime{DateTime: "---"},
 		},
 	}
@@ -59,18 +62,18 @@ func TestNewEvents(t *testing.T) {
 	arg := []*calendar.Event{
 		{
 			Summary: "A",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(25 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(25 * time.Minute).Format(time.RFC3339)},
 		},
 		{
 			Summary: "B",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(60 * time.Minute).Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(85 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Add(60 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(85 * time.Minute).Format(time.RFC3339)},
 		},
 		{
 			Summary: "C",
-			Start:   &calendar.EventDateTime{DateTime: time.Now().Add(120 * time.Minute).Format(time.RFC3339)},
-			End:     &calendar.EventDateTime{DateTime: time.Now().Add(145 * time.Minute).Format(time.RFC3339)},
+			Start:   &calendar.EventDateTime{DateTime: t0.Add(120 * time.Minute).Format(time.RFC3339)},
+			End:     &calendar.EventDateTime{DateTime: t0.Add(145 * time.Minute).Format(time.RFC3339)},
 		},
 	}
 	want := Events{A, B, C}
@@ -87,7 +90,10 @@ func TestEvents_Diff(t *testing.T) {
 	wantNegative := Events{D}
 	wantPositive := Events{C}
 
-	gotNegative, gotPositive := one.Diff(another)
+	gotNegative, gotPositive, err := one.Diff(another)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
 	if diff := cmp.Diff(gotNegative, wantNegative); diff != "" {
 		t.Errorf("got an unexpected diff:\n%s", diff)
@@ -108,7 +114,7 @@ func TestEvents_Has(t *testing.T) {
 		events      Events
 		args        args
 		want        bool
-		expectPanic bool
+		expectError bool
 	}{
 		{
 			name:   "True",
@@ -117,7 +123,7 @@ func TestEvents_Has(t *testing.T) {
 				b: A,
 			},
 			want:        true,
-			expectPanic: false,
+			expectError: false,
 		},
 		{
 			name:   "False",
@@ -126,7 +132,7 @@ func TestEvents_Has(t *testing.T) {
 				b: B,
 			},
 			want:        false,
-			expectPanic: false,
+			expectError: false,
 		},
 		{
 			name:   "BrokenStartDatetimeInEvents",
@@ -135,7 +141,7 @@ func TestEvents_Has(t *testing.T) {
 				b: A,
 			},
 			want:        false,
-			expectPanic: true,
+			expectError: true,
 		},
 		{
 			name:   "BrokenEndDatetimeInEvents",
@@ -144,7 +150,7 @@ func TestEvents_Has(t *testing.T) {
 				b: A,
 			},
 			want:        false,
-			expectPanic: true,
+			expectError: true,
 		},
 		{
 			name:   "BrokenStartDatetimeInB",
@@ -153,7 +159,7 @@ func TestEvents_Has(t *testing.T) {
 				b: eventBrokenStartDateTime,
 			},
 			want:        false,
-			expectPanic: true,
+			expectError: true,
 		},
 		{
 			name:   "BrokenEndDatetimeInB",
@@ -162,28 +168,27 @@ func TestEvents_Has(t *testing.T) {
 				b: eventBrokenEndDateTime,
 			},
 			want:        false,
-			expectPanic: true,
+			expectError: true,
 		},
 	}
 
 	for _, c := range tests {
 		t.Run(c.name, func(t *testing.T) {
-			defer func() {
-				err := recover()
+			got, err := c.events.Has(c.args.b)
 
-				switch {
-				case err != nil && c.expectPanic:
-					// OK
-				case err != nil && !c.expectPanic:
-					t.Errorf("unexpected panic: %v", err)
-				case err == nil && c.expectPanic:
-					t.Error("expected panic but did not panic")
-				case err == nil && !c.expectPanic:
-					// OK
+			if c.expectError {
+				if err == nil {
+					t.Error("expected error but got nil")
 				}
-			}()
+				return
+			}
 
-			if diff := cmp.Diff(c.events.Has(c.args.b), c.want); diff != "" {
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
+
+			if diff := cmp.Diff(got, c.want); diff != "" {
 				t.Errorf("got an unexpected diff:\n%s", diff)
 			}
 		})
@@ -194,7 +199,10 @@ func TestEvents_Unique(t *testing.T) {
 	redundant := Events{A, A, B, B, C, C}
 	want := Events{A, B, C}
 
-	got := redundant.Unique()
+	got, err := redundant.Unique()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got an unexpected diff:\n%s", diff)
