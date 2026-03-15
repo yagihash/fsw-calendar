@@ -57,6 +57,7 @@ func TestEvent_Equals(t *testing.T) {
 		event       *Event
 		arg         *Event
 		want        bool
+		expectError bool
 		expectPanic bool
 	}{
 		{
@@ -197,21 +198,32 @@ func TestEvent_Equals(t *testing.T) {
 	for _, c := range tests {
 		t.Run(c.name, func(t *testing.T) {
 			defer func() {
-				err := recover()
+				r := recover()
 
 				switch {
-				case err != nil && c.expectPanic:
+				case r != nil && c.expectPanic:
 					// OK
-				case err != nil && !c.expectPanic:
-					t.Errorf("unexpected panic: %v", err)
-				case err == nil && c.expectPanic:
+				case r != nil && !c.expectPanic:
+					t.Errorf("unexpected panic: %v", r)
+				case r == nil && c.expectPanic:
 					t.Error("expected panic but did not panic")
-				case err == nil && !c.expectPanic:
+				case r == nil && !c.expectPanic:
 					// OK
 				}
 			}()
 
-			if diff := cmp.Diff(c.event.Equals(c.arg), c.want); diff != "" {
+			got, err := c.event.Equals(c.arg)
+			if c.expectError {
+				if err == nil {
+					t.Error("expected error but got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
+			if diff := cmp.Diff(got, c.want); diff != "" {
 				t.Errorf("got an unexpected diff:\n%s", diff)
 			}
 		})
