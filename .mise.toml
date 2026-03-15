@@ -1,0 +1,18 @@
+[tools]
+go = "1.26.1"
+
+[tasks.setup]
+description = "依存関係のインストール"
+run = "go mod download"
+
+[tasks.test]
+description = "テスト実行（カバレッジ・データ競合チェック付き）"
+run = "go test -v -cover -race ./..."
+
+[tasks.coverage]
+description = "カバレッジレポート生成・ブラウザ表示"
+run = """
+go test -v -cover -race ./... -coverprofile=/tmp/cover.out
+go tool cover -html=/tmp/cover.out -o /tmp/cover.html
+open /tmp/cover.html
+"""
