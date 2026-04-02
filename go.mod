@@ -10,7 +10,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/slack-go/slack v0.20.0
 	go.uber.org/zap v1.27.1
-	google.golang.org/api v0.273.1
+	google.golang.org/api v0.274.0
 )
 
 require (
