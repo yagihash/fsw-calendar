@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/google/go-cmp v0.7.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/slack-go/slack v0.21.0
+	github.com/slack-go/slack v0.21.1
 	go.uber.org/zap v1.27.1
 	google.golang.org/api v0.275.0
 )
