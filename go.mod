@@ -3,7 +3,7 @@ module github.com/yagihash/fsw-calendar
 go 1.26.1
 
 require (
-	cloud.google.com/go/logging v1.17.0
+	cloud.google.com/go/logging v1.18.0
 	cloud.google.com/go/pubsub v1.50.2
 	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/google/go-cmp v0.7.0
