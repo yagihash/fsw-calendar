@@ -1,5 +1,5 @@
 [tools]
-go = "1.26.2"
+go = "1.26.3"
 
 [tasks.setup]
 description = "依存関係のインストール"
