@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	cloud.google.com/go/logging v1.18.0
-	cloud.google.com/go/pubsub v1.50.2
+	cloud.google.com/go/pubsub/v2 v2.6.0
 	cloud.google.com/go/pubsub/v2 v2.6.0
 	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/google/go-cmp v0.7.0
