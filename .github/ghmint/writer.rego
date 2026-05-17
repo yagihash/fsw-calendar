@@ -1,0 +1,14 @@
+package ghmint
+
+issuer := "https://token.actions.githubusercontent.com"
+
+permissions := {
+	"contents": "write",
+	"pull_requests": "write",
+}
+
+default allow := false
+
+allow if {
+	input.sub == "repo:yagihash/fsw-calendar:ref:refs/heads/main"
+}
