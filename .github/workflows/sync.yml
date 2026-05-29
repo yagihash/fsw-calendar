@@ -1,0 +1,56 @@
+name: sync
+
+on:
+  schedule:
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  sync:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        include:
+          - name: ss-4
+            course: ss
+            class: ss-4
+            calendar_id: 25dfc5f523279ce53fbeb5a90eecfe45b2bdc8fdbe8a17bbae28ee77a7f53753@group.calendar.google.com
+          - name: t-4
+            course: rc
+            class: t-4
+            calendar_id: 0a31d519fe9246513b2bc7937d0191d60058eb3c74ec8dea8481642331c48305@group.calendar.google.com
+          - name: ns-4
+            course: rc
+            class: ns-4
+            calendar_id: 4860bb7c2c62bf60cd5264495d3e739e06d82eaf66fdfb6f0e3f77e053d1b6fe@group.calendar.google.com
+          - name: s-4
+            course: rc
+            class: s-4
+            calendar_id: ccc748b5eb57fc6d8d01d2a380f7833225b347a54b816d23a5dbabb209f263b3@group.calendar.google.com
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version-file: go.mod
+
+      - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: sync
+        env:
+          CALENDAR_ID: ${{ matrix.calendar_id }}
+          COURSE: ${{ matrix.course }}
+          CLASS: ${{ matrix.class }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: go run ./cmd/run
