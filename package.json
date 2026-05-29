@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "start": "tsx ./cmd/run/main.ts",
     "test": "vitest run",
