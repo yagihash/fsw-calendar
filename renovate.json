@@ -24,9 +24,6 @@
   "rangeStrategy": "pin",
   "minimumReleaseAge": "3 days",
   "osvVulnerabilityAlerts": true,
-  "postUpdateOptions": [
-    "gomodTidy"
-  ],
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": [
@@ -62,48 +59,44 @@
       "automerge": true
     },
     {
-      "description": "Group Google Cloud SDK updates together",
-      "groupName": "Google Cloud SDK",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchPackageNames": [
-        "cloud.google.com/go{/,}**"
-      ]
-    },
-    {
-      "description": "Group golang.org/x/* updates together",
-      "groupName": "golang.org/x packages",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchPackageNames": [
-        "golang.org/x{/,}**"
-      ]
-    },
-    {
-      "description": "Group googleapis updates together",
-      "groupName": "googleapis packages",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchPackageNames": [
-        "google.golang.org{/,}**"
-      ]
-    },
-    {
-      "description": "Automerge Go module minor/patch updates",
+      "description": "Automerge npm minor/patch updates",
       "matchManagers": [
-        "gomod"
+        "npm"
       ],
       "matchUpdateTypes": [
         "minor",
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "description": "Group @types/* updates together",
+      "groupName": "@types packages",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPackagePrefixes": [
+        "@types/"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "description": "Group Google Cloud / googleapis npm packages",
+      "groupName": "Google Cloud packages",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPackageNames": [
+        "googleapis",
+        "@google-cloud/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     }
   ],
   "customManagers": [
