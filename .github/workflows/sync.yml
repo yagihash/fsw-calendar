@@ -44,8 +44,8 @@ jobs:
 
       - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
         with:
-          workload_identity_provider: projects/346973490040/locations/global/workloadIdentityPools/github-yagihash-pool/providers/fsw-calendar-provider
-          service_account: fsw-calendar@yagihash-lab.iam.gserviceaccount.com
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
 
       - name: sync
         env:
