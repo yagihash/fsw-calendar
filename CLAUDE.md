@@ -111,6 +111,11 @@ CALENDAR_ID=xxx@group.calendar.google.com \
 - `src/fetcher/fetcher.test.ts` は `vi.stubGlobal('fetch', ...)` でHTTPクライアントをモックする
 - Google Calendar APIは結合テストなし（実APIを直接テストしない）
 
+## Git ワークフロー
+
+- `main` ブランチには直接 push しない
+- 必ず feature ブランチを切って PR 経由でマージする
+
 ## 注意事項
 
 - このカレンダーはFSW公式情報に基づく非公式な利用であり、可用性は保証されない
