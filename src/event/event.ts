@@ -13,8 +13,7 @@ export interface DocEvent {
 }
 
 function formatDateTime(date: string, time: string): string {
-  const t = time.replace(/^0/, '');
-  return `${date}T${t}:00+09:00`;
+  return `${date}T${time}:00+09:00`;
 }
 
 export function newEvent(date: string, start: string, end: string, title: string): CalendarEventData {
