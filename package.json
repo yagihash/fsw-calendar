@@ -1,0 +1,25 @@
+{
+  "name": "fsw-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "start": "tsx ./cmd/run/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@slack/webhook": "^7.0.4",
+    "cheerio": "^1.0.0",
+    "googleapis": "^146.0.0",
+    "tsx": "^4.19.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

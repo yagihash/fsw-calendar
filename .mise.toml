@@ -1,18 +1,10 @@
 [tools]
-go = "1.26.3"
+node = "24"
 
 [tasks.setup]
 description = "依存関係のインストール"
-run = "go mod download"
+run = "pnpm install"
 
-[tasks.test]
-description = "テスト実行（カバレッジ・データ競合チェック付き）"
-run = "go test -v -cover -race ./..."
-
-[tasks.coverage]
-description = "カバレッジレポート生成・ブラウザ表示"
-run = """
-go test -v -cover -race ./... -coverprofile=/tmp/cover.out
-go tool cover -html=/tmp/cover.out -o /tmp/cover.html
-open /tmp/cover.html
-"""
+[tasks.typecheck]
+description = "型チェック"
+run = "pnpm exec tsc --noEmit"
