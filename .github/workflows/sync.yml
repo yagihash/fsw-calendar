@@ -40,9 +40,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          go-version-file: go.mod
+          node-version-file: package.json
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
 
       - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
         with:
@@ -55,4 +60,4 @@ jobs:
           COURSE: ${{ matrix.course }}
           CLASS: ${{ matrix.class }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        run: go run ./cmd/run
+        run: pnpm exec tsx ./cmd/run/main.ts
