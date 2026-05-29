@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.35](https://github.com/yagihash/fsw-calendar/compare/v0.0.34...v0.0.35) - 2026-05-29
+- feat: GitHub Actions で Calendar sync ワークフローを追加する by @yagihash in https://github.com/yagihash/fsw-calendar/pull/312
+- fix: sync ワークフローの WIF 設定と environment 指定を修正する by @yagihash in https://github.com/yagihash/fsw-calendar/pull/314
+
 ## [v0.0.34](https://github.com/yagihash/fsw-calendar/compare/v0.0.33...v0.0.34) - 2026-05-17
 - Update module cloud.google.com/go/pubsub/v2 to v2.1.0 by @renovate[bot] in https://github.com/yagihash/fsw-calendar/pull/228
 - Update module google.golang.org/api to v0.251.0 by @renovate[bot] in https://github.com/yagihash/fsw-calendar/pull/229
