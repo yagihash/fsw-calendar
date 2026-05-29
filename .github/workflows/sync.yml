@@ -13,7 +13,9 @@ jobs:
   sync:
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    environment: main
+    environment:
+      name: main
+      deployment: false
     strategy:
       matrix:
         include:
