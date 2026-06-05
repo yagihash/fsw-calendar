@@ -9,26 +9,26 @@ importers:
   .:
     dependencies:
       '@slack/webhook':
-        specifier: ^7.0.4
+        specifier: 7.0.9
         version: 7.0.9
       cheerio:
-        specifier: ^1.0.0
+        specifier: 1.2.0
         version: 1.2.0
       googleapis:
-        specifier: ^146.0.0
+        specifier: 146.0.0
         version: 146.0.0
       tsx:
-        specifier: ^4.19.4
+        specifier: 4.22.3
         version: 4.22.3
     devDependencies:
       '@types/node':
-        specifier: ^24.0.0
+        specifier: 24.12.4
         version: 24.12.4
       typescript:
-        specifier: ^5.7.0
+        specifier: 5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^4.0.0
+        specifier: 4.1.8
         version: 4.1.8(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(tsx@4.22.3))
 
 packages:

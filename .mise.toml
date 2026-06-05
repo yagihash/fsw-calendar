@@ -1,5 +1,5 @@
 [tools]
-node = "24"
+node = "v24.16.0"
 
 [tasks.setup]
 description = "依存関係のインストール"

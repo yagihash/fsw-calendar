@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=24"
+    "node": "v26.3.0"
   },
   "packageManager": "pnpm@10.28.2",
   "scripts": {
@@ -12,14 +12,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slack/webhook": "^7.0.4",
-    "cheerio": "^1.0.0",
-    "googleapis": "^146.0.0",
-    "tsx": "^4.19.4"
+    "@slack/webhook": "7.0.9",
+    "cheerio": "1.2.0",
+    "googleapis": "146.0.0",
+    "tsx": "4.22.3"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
-    "typescript": "^5.7.0",
-    "vitest": "^4.0.0"
+    "@types/node": "24.12.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.8"
   }
 }
