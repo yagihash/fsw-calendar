@@ -5,7 +5,7 @@
   "engines": {
     "node": "v26.3.0"
   },
-  "packageManager": "pnpm@10.34.1",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "start": "tsx ./cmd/run/main.ts",
     "test": "vitest run",
