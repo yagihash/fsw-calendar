@@ -16,15 +16,15 @@ jobs:
     outputs:
       workflows: ${{ steps.filter.outputs.workflows }}
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@777ddaafc9ec2e09c9779cdb860e75906adc19c2 # v0.0.34
+      - uses: cicd-sensor/cicd-sensor-action@2b76335ff1c2dd298e983961f7a200d3fe9076c2 # v0.0.36
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
         id: filter
         with:
           filters: |
@@ -41,12 +41,12 @@ jobs:
       attestations: read
 
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@777ddaafc9ec2e09c9779cdb860e75906adc19c2 # v0.0.34
+      - uses: cicd-sensor/cicd-sensor-action@2b76335ff1c2dd298e983961f7a200d3fe9076c2 # v0.0.36
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -78,12 +78,12 @@ jobs:
       attestations: read
 
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@777ddaafc9ec2e09c9779cdb860e75906adc19c2 # v0.0.34
+      - uses: cicd-sensor/cicd-sensor-action@2b76335ff1c2dd298e983961f7a200d3fe9076c2 # v0.0.36
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
