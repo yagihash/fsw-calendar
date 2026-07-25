@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slack/webhook": "7.0.9",
+    "@slack/webhook": "7.2.0",
     "cheerio": "1.2.0",
     "googleapis": "146.0.0",
     "tsx": "4.22.4"
