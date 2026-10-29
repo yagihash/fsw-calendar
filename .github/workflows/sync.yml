@@ -20,22 +20,21 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: ss-4
-            course: ss
-            class: ss-4
-            calendar_id: 25dfc5f523279ce53fbeb5a90eecfe45b2bdc8fdbe8a17bbae28ee77a7f53753@group.calendar.google.com
-          - name: t-4
-            course: rc
-            class: t-4
-            calendar_id: 0a31d519fe9246513b2bc7937d0191d60058eb3c74ec8dea8481642331c48305@group.calendar.google.com
-          - name: ns-4
-            course: rc
-            class: ns-4
-            calendar_id: 4860bb7c2c62bf60cd5264495d3e739e06d82eaf66fdfb6f0e3f77e053d1b6fe@group.calendar.google.com
+          - name: r-4
+            class: r-4
+            calendar_id: a7d264798dfbd87a96929ea4ae415b9c900a645b73403835a6b1621dbbd668cd@group.calendar.google.com
           - name: s-4
-            course: rc
             class: s-4
-            calendar_id: ccc748b5eb57fc6d8d01d2a380f7833225b347a54b816d23a5dbabb209f263b3@group.calendar.google.com
+            calendar_id: 4fca9ba5c00115af8aed9cbc340772ea5c5e64b3dfa975732f6e767862f405b1@group.calendar.google.com
+          - name: n-4
+            class: n-4
+            calendar_id: bdb6d8a80c9cdfd605319bc879d626d79fda0394cdeb231c25a7a4278f6f28ef@group.calendar.google.com
+          - name: l-4
+            class: l-4
+            calendar_id: 0e51d284e64c42f6067a27721b921e1dcb4759f04bbed5cf4fd4faff2e20071b@group.calendar.google.com
+          - name: s-course-4
+            class: s-course-4
+            calendar_id: b78abe03924c2624a1c0f4271fcb6eb2a90a68f2029f239763ce06df1fb711fb@group.calendar.google.com
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -58,7 +57,6 @@ jobs:
       - name: sync
         env:
           CALENDAR_ID: ${{ matrix.calendar_id }}
-          COURSE: ${{ matrix.course }}
           CLASS: ${{ matrix.class }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: pnpm exec tsx ./cmd/run/main.ts

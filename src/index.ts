@@ -3,7 +3,7 @@ import { type Data } from './config/data.js';
 import { newLogger, type LogLevel } from './logger/logger.js';
 import { fetchDocEvents } from './fetcher/fetcher.js';
 import { newFromDocEvent } from './event/event.js';
-import { diff } from './event/events.js';
+import { diff, ensureFetched } from './event/events.js';
 import { Calendar } from './calendar/calendar.js';
 import { Slack } from './notify/slack/slack.js';
 
@@ -19,13 +19,18 @@ export async function register(data: Data): Promise<void> {
     const y = now.getFullYear();
     const m = now.getMonth() + 1;
 
-    const docEvents = await fetchDocEvents(c.hostname, data.course, data.class, y, m, c.recurrence);
+    if (data.class === '') {
+      throw new Error('unknown class');
+    }
+
+    const docEvents = await fetchDocEvents(c.hostname, data.class, y, m);
     log.debug('loaded schedules', { events: docEvents });
 
     const fetchedEvents = docEvents.map(newFromDocEvent);
 
-    const calendar = new Calendar(data.calendarId, c.timezone);
-    const existingEvents = await calendar.getEvents(y, m, c.recurrence);
+    const calendar = new Calendar(data.calendarId);
+    const existingEvents = await calendar.getEvents(y, m);
+    ensureFetched(existingEvents, fetchedEvents);
 
     const { toBeAdded, toBeDeleted } = diff(existingEvents, fetchedEvents);
 

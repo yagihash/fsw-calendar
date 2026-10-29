@@ -4,7 +4,7 @@
 
 ## プロジェクト概要
 
-FSWの公式サイトからスケジュールを取得し、Googleカレンダーと差分同期します。GitHub Actionsで毎朝自動実行されます。
+富士モータースポーツフォレストの会員サイトからスケジュールを取得し、Googleカレンダーと差分同期します。GitHub Actionsで毎朝自動実行されます。
 
 ## ディレクトリ構成
 
@@ -15,7 +15,6 @@ FSWの公式サイトからスケジュールを取得し、Googleカレンダ�
 - `src/fetcher/` - FSWサイトからのスケジュール取得
 - `src/logger/` - GitHub Actions ワークフローコマンド準拠のロガー
 - `src/notify/slack/` - Slackへのエラー通知
-- `src/utils/` - 月インクリメントなどのヘルパー
 - `cmd/run/` - CLIエントリーポイント（GitHub Actions から呼び出す）
 
 ## 開発コマンド
@@ -37,19 +36,20 @@ mise run typecheck
 ## アーキテクチャ
 
 1. GitHub Actions のcronスケジュール（毎日 17:00 UTC）で起動
-2. matrix で SS-4 / T-4 / NS-4 / S-4 を並列実行
-3. `cmd/run/main.ts` が環境変数（`CALENDAR_ID`, `COURSE`, `CLASS`）を読み込んで `register()` を呼び出す
-4. FSWサイトから該当月のスケジュールをスクレイピング
+2. matrix で R-4 / S-4 / N-4 / L-4 / Sコース4輪 を並列実行
+3. `cmd/run/main.ts` が環境変数（`CALENDAR_ID`, `CLASS`）を読み込んで `register()` を呼び出す
+4. 会員サイトから当月1日以降の公開済みスケジュールを取得
 5. 既存のGoogleカレンダーイベントと差分比較
 6. 追加・削除が必要なイベントのみ更新
 7. エラー発生時はSlackに通知
 
 ## 対応カレンダー
 
-- SS-4
-- T-4
-- NS-4
+- R-4
 - S-4
+- N-4
+- L-4
+- Sコース 4輪（ショートコース）
 
 ## 環境変数
 
@@ -58,25 +58,29 @@ mise run typecheck
 | 変数名 | デフォルト値 | 必須 | 説明 |
 |---|---|---|---|
 | `TIMEZONE` | `Asia/Tokyo` | | タイムゾーン |
-| `RECURRENCE` | `2` | | 取得する月数（当月含む） |
 | `LOG_LEVEL` | `INFO` | | ログレベル（DEBUG/INFO/WARN/ERROR） |
-| `HOSTNAME` | `www.fsw.tv` | | スクレイピング先FSWのホスト名 |
+| `HOSTNAME` | `membership.fujimotorsportsforest.jp` | | 取得先の会員サイトのホスト名 |
 | `SLACK_WEBHOOK` | — | ○ | Slack Incoming Webhook URL |
 | `CALENDAR_ID` | — | ○ | Google カレンダー ID |
-| `COURSE` | — | ○ | コース（`rc` / `ss`） |
-| `CLASS` | — | ○ | クラス（`ss-4` / `t-4` / `ns-4` / `s-4`） |
+| `CLASS` | — | ○ | クラス（`r-4` / `s-4` / `n-4` / `l-4` / `s-course-4`） |
 
-## スクレイピング
+## スケジュール取得
 
-FSWサイトから以下のURL形式でHTMLを取得し、cheerio でパースします。
+会員サイトは Salesforce Experience Cloud（Aura）製の SPA で、HTML にスケジュールは含まれません。画面が内部で呼んでいる Apex を直接呼びます（ログイン不要、`src/fetcher/fetcher.ts`）。
 
-```
-https://{HOSTNAME}/driving/sports/{course}/{class}/{year}/{month:02d}.html
-```
+1. `https://{HOSTNAME}/s/racing-course-reservation?language=ja` を取得し、HTML から `fwuid` と `loaded`（Aura のバージョン）を取り出す。リリースごとに変わるので毎回取得する
+2. `POST https://{HOSTNAME}/s/sfsites/aura?r=1&aura.ApexAction.execute=1` で `TMC_DX_DriveSlotController.getDriveSlotList` を呼ぶ
 
-CSSセレクタ: `#table-calendar > tbody > tr.row-rc > td.type > div > p`
+主なパラメータ:
 
-未来月のページが未公開（HTTP 404）の場合は正常として扱い、処理を終了します（`src/fetcher/fetcher.ts`参照）。
+- `driveCourse`: `レーシングコース` または `ショートコース`（`src/fetcher/class.ts` の `classInfo()` でクラスから決まる）
+- `driveCategoryList`: 取得するクラス名の JSON 配列。ショートコースは全角（`Ｓコース　４輪`、スペースも全角）
+- `driveDate`: 取得開始日。当月1日を指定する
+- `driveDateList`: `[]` にすると公開済みの全枠が返る。`maxDays` は `driveDate` からの日数上限
+
+レスポンスの時刻（`TMC_DX_StartTime__c` など）は0時からのミリ秒です。キャンセル済み（`TMC_DX_IsReservationCanceled__c`）の枠は除外します。残数はイベント名に含めません（毎日差分が出るため）。
+
+サイトのデータは最近のリプレース以降のものしかなく、過去の月は取得できません。
 
 ## コード設計の注意点
 
@@ -86,8 +90,14 @@ CSSセレクタ: `#table-calendar > tbody > tr.row-rc > td.type > div > p`
 **差分ロジック**
 `diff(existing, fetched)` は集合演算で実装されています。`fetched` に存在して `existing` にないものが「追加すべきイベント」（`toBeAdded`）、`existing` に存在して `fetched` にないものが「削除すべきイベント」（`toBeDeleted`）になります（`src/event/events.ts`）。
 
+**比較範囲**
+取得側もカレンダー側も「当月1日 00:00 JST 以降すべて」を範囲とします。範囲が揃っていないと、範囲外のイベントが差分で消えたり重複したりします。前月以前のイベントは触りません（`src/calendar/calendar.ts`）。
+
+**空取得の安全策**
+取得結果が0件なのにカレンダーにイベントがある場合は、削除せずエラーで止めてSlackに通知します（`ensureFetched()`、`src/event/events.ts`）。
+
 **時刻フォーマット**
-FSWサイトは `9:30` のように1桁の時刻を返すことがある。`formatDateTime()` でゼロ埋めして ISO 8601 準拠の形式（`09:30`）に統一してから Google Calendar API と比較する（`src/event/event.ts`）。
+`formatDateTime()` で `9:30` のような1桁の時刻もゼロ埋めして ISO 8601 準拠の形式（`09:30`）に統一してから Google Calendar API と比較する（`src/event/event.ts`）。
 
 **Google Calendar 認証**
 Application Default Credentials（ADC）を使用します。ローカルで動かす場合は `gcloud auth application-default login` が必要です。GitHub Actions では Workload Identity Federation で認証します。
@@ -99,8 +109,7 @@ GitHub Actions のワークフローコマンドを使用します。`INFO` → 
 
 ```bash
 CALENDAR_ID=xxx@group.calendar.google.com \
-  COURSE=rc \
-  CLASS=ns-4 \
+  CLASS=n-4 \
   SLACK_WEBHOOK=https://hooks.slack.com/... \
   pnpm exec tsx ./cmd/run/main.ts
 ```
@@ -108,7 +117,7 @@ CALENDAR_ID=xxx@group.calendar.google.com \
 ## テスト方針
 
 - 全モジュールにユニットテストを記述する（Vitest）
-- `src/fetcher/fetcher.test.ts` は `vi.stubGlobal('fetch', ...)` でHTTPクライアントをモックする
+- `src/fetcher/fetcher.test.ts` は `vi.stubGlobal('fetch', ...)` でHTTPクライアントをモックし、Aura のレスポンスを返す
 - Google Calendar APIは結合テストなし（実APIを直接テストしない）
 
 ## Git ワークフロー

@@ -11,16 +11,18 @@ A small TypeScript implementation that automatically registers the schedules of 
 
 You can import the calendars using iCal URLs below. Only listed categories are supported now. There's no plan to support other categories.
 
-- [SS-4](https://calendar.google.com/calendar/ical/25dfc5f523279ce53fbeb5a90eecfe45b2bdc8fdbe8a17bbae28ee77a7f53753%40group.calendar.google.com/public/basic.ics)
-- [T-4](https://calendar.google.com/calendar/ical/0a31d519fe9246513b2bc7937d0191d60058eb3c74ec8dea8481642331c48305%40group.calendar.google.com/public/basic.ics)
-- [NS-4](https://calendar.google.com/calendar/ical/4860bb7c2c62bf60cd5264495d3e739e06d82eaf66fdfb6f0e3f77e053d1b6fe%40group.calendar.google.com/public/basic.ics)
-- [S-4](https://calendar.google.com/calendar/ical/ccc748b5eb57fc6d8d01d2a380f7833225b347a54b816d23a5dbabb209f263b3%40group.calendar.google.com/public/basic.ics)
+- [R-4](https://calendar.google.com/calendar/ical/a7d264798dfbd87a96929ea4ae415b9c900a645b73403835a6b1621dbbd668cd%40group.calendar.google.com/public/basic.ics)
+- [S-4](https://calendar.google.com/calendar/ical/4fca9ba5c00115af8aed9cbc340772ea5c5e64b3dfa975732f6e767862f405b1%40group.calendar.google.com/public/basic.ics)
+- [N-4](https://calendar.google.com/calendar/ical/bdb6d8a80c9cdfd605319bc879d626d79fda0394cdeb231c25a7a4278f6f28ef%40group.calendar.google.com/public/basic.ics)
+- [L-4](https://calendar.google.com/calendar/ical/0e51d284e64c42f6067a27721b921e1dcb4759f04bbed5cf4fd4faff2e20071b%40group.calendar.google.com/public/basic.ics)
+- [Sコース 4輪 (Short course)](https://calendar.google.com/calendar/ical/b78abe03924c2624a1c0f4271fcb6eb2a90a68f2029f239763ce06df1fb711fb%40group.calendar.google.com/public/basic.ics)
 
 Each calendar is updated every early morning. If the original schedule has changed, the calendar follows it behind 24 hours at maximum.
 
 The calendars are also available below.
 
-- [SS-4](https://calendar.google.com/calendar/embed?src=25dfc5f523279ce53fbeb5a90eecfe45b2bdc8fdbe8a17bbae28ee77a7f53753%40group.calendar.google.com&ctz=Asia%2FTokyo)
-- [T-4](https://calendar.google.com/calendar/embed?src=0a31d519fe9246513b2bc7937d0191d60058eb3c74ec8dea8481642331c48305%40group.calendar.google.com&ctz=Asia%2FTokyo)
-- [NS-4](https://calendar.google.com/calendar/embed?src=4860bb7c2c62bf60cd5264495d3e739e06d82eaf66fdfb6f0e3f77e053d1b6fe%40group.calendar.google.com&ctz=Asia%2FTokyo)
-- [S-4](https://calendar.google.com/calendar/embed?src=ccc748b5eb57fc6d8d01d2a380f7833225b347a54b816d23a5dbabb209f263b3%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [R-4](https://calendar.google.com/calendar/embed?src=a7d264798dfbd87a96929ea4ae415b9c900a645b73403835a6b1621dbbd668cd%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [S-4](https://calendar.google.com/calendar/embed?src=4fca9ba5c00115af8aed9cbc340772ea5c5e64b3dfa975732f6e767862f405b1%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [N-4](https://calendar.google.com/calendar/embed?src=bdb6d8a80c9cdfd605319bc879d626d79fda0394cdeb231c25a7a4278f6f28ef%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [L-4](https://calendar.google.com/calendar/embed?src=0e51d284e64c42f6067a27721b921e1dcb4759f04bbed5cf4fd4faff2e20071b%40group.calendar.google.com&ctz=Asia%2FTokyo)
+- [Sコース 4輪 (Short course)](https://calendar.google.com/calendar/embed?src=b78abe03924c2624a1c0f4271fcb6eb2a90a68f2029f239763ce06df1fb711fb%40group.calendar.google.com&ctz=Asia%2FTokyo)

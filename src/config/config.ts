@@ -1,6 +1,5 @@
 export interface Config {
   timezone: string;
-  recurrence: number;
   logLevel: string;
   hostname: string;
   webhook: string;
@@ -9,9 +8,8 @@ export interface Config {
 export function load(): Config {
   return {
     timezone: process.env['TIMEZONE'] ?? 'Asia/Tokyo',
-    recurrence: parseInt(process.env['RECURRENCE'] ?? '2', 10),
     logLevel: process.env['LOG_LEVEL'] ?? 'INFO',
-    hostname: process.env['HOSTNAME'] ?? 'www.fsw.tv',
+    hostname: process.env['HOSTNAME'] ?? 'membership.fujimotorsportsforest.jp',
     webhook: process.env['SLACK_WEBHOOK'] ?? '',
   };
 }
