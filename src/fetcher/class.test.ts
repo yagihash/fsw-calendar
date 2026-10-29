@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { classes, classInfo } from './class.js';
+import { classes, classInfo, isClass } from './class.js';
+
+describe('isClass', () => {
+  it.each(classes)('accepts %s', c => {
+    expect(isClass(c)).toBe(true);
+  });
+
+  it.each(['', 'ss-4', 'R-4', 'constructor'])('rejects %j', c => {
+    expect(isClass(c)).toBe(false);
+  });
+});
 
 describe('classInfo', () => {
   it('maps racing course classes', () => {

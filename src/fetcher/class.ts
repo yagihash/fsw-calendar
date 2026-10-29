@@ -2,6 +2,10 @@ export const classes = ['r-4', 's-4', 'n-4', 'l-4', 's-course-4'] as const;
 
 export type Class = (typeof classes)[number];
 
+export function isClass(s: string): s is Class {
+  return (classes as readonly string[]).includes(s);
+}
+
 export interface ClassInfo {
   // driveCourse parameter of the membership site
   course: string;

@@ -1,8 +1,9 @@
 import { load } from './config/config.js';
 import { calendarIds } from './config/calendars.js';
+import { parseTarget, serializePayload } from './config/payload.js';
 import { newLogger, type Logger, type LogLevel } from './logger/logger.js';
 import { fetchDocEvents } from './fetcher/fetcher.js';
-import { classes, classInfo, type Class } from './fetcher/class.js';
+import { classes, classInfo, isClass, type Class } from './fetcher/class.js';
 import { type DocEvent, newFromDocEvent } from './event/event.js';
 import { diff, ensureFetched } from './event/events.js';
 import { Calendar } from './calendar/calendar.js';
@@ -53,40 +54,51 @@ async function syncCalendar(
   await notify.info(`updated calendar (${classInfo(cls).label})`);
 }
 
-export async function register(): Promise<void> {
+// The first day of the current month, which the schedules are fetched from.
+function currentMonth(timezone: string): { year: number; month: number } {
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: timezone }));
+  return { year: now.getFullYear(), month: now.getMonth() + 1 };
+}
+
+// Fetches the schedules of every class at once and returns them serialized for the register jobs.
+export async function fetchSchedules(): Promise<string> {
   const c = load();
   const log = newLogger(c.logLevel as LogLevel);
   const notify = new Slack(c.webhook);
 
   log.debug('logger is ready');
 
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: c.timezone }));
-  const y = now.getFullYear();
-  const m = now.getMonth() + 1;
+  const { year, month } = currentMonth(c.timezone);
 
-  let docEvents: Map<Class, DocEvent[]>;
   try {
-    docEvents = await fetchDocEvents(c.hostname, classes, y, m);
+    const docEvents = await fetchDocEvents(c.hostname, classes, year, month);
+    log.debug('loaded schedules', { events: Object.fromEntries(docEvents) });
+    return serializePayload(year, month, docEvents);
   } catch (err) {
     log.error('failed to fetch schedules', { error: String(err) });
     await notify.warn(`error: ${String(err)}`).catch(() => undefined);
     throw err;
   }
-  log.debug('loaded schedules', { events: Object.fromEntries(docEvents) });
+}
 
-  // a failure of a calendar must not block the others
-  const failed: Class[] = [];
-  for (const cls of classes) {
-    try {
-      await syncCalendar(log, notify, cls, docEvents.get(cls) ?? [], y, m);
-    } catch (err) {
-      failed.push(cls);
-      log.error('failed to sync calendar', { class: cls, error: String(err) });
-      await notify.warn(`error (${classInfo(cls).label}): ${String(err)}`).catch(() => undefined);
+// Syncs the calendar of the class with the schedules fetched by fetchSchedules.
+export async function register(cls: string, raw: string): Promise<void> {
+  const c = load();
+  const log = newLogger(c.logLevel as LogLevel);
+  const notify = new Slack(c.webhook);
+
+  try {
+    log.debug('logger is ready');
+
+    if (!isClass(cls)) {
+      throw new Error(`unknown class: ${JSON.stringify(cls)}`);
     }
-  }
 
-  if (failed.length > 0) {
-    throw new Error(`failed to sync ${failed.length} calendar(s): ${failed.join(', ')}`);
+    const { year, month, events } = parseTarget(cls, raw);
+    await syncCalendar(log, notify, cls, events, year, month);
+  } catch (err) {
+    log.error('failed to sync calendar', { class: cls, error: String(err) });
+    await notify.warn(`error (${cls}): ${String(err)}`).catch(() => undefined);
+    throw err;
   }
 }
