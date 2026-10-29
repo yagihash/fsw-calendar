@@ -1,19 +1,15 @@
 import { register } from '../../src/index.js';
-import { parseData } from '../../src/config/data.js';
 
 async function run(): Promise<number> {
-  const calendarId = process.env['CALENDAR_ID'];
   const cls = process.env['CLASS'];
+  const events = process.env['EVENTS'];
 
-  if (!calendarId || !cls) {
-    console.error('CALENDAR_ID and CLASS environment variables are required');
+  if (!cls || !events) {
+    console.error('CLASS and EVENTS environment variables are required');
     return 1;
   }
 
-  const raw = JSON.stringify({ calendar_id: calendarId, class: cls });
-  const data = parseData(raw);
-
-  await register(data);
+  await register(cls, events);
   return 0;
 }
 
