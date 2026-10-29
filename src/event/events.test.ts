@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { diff, type Events } from './events.js';
+import { diff, ensureFetched, type Events } from './events.js';
 import { type CalendarEventData } from './event.js';
 
 const t0 = new Date('2025-01-01T09:00:00+09:00');
@@ -47,5 +47,19 @@ describe('diff', () => {
     const { toBeAdded, toBeDeleted } = diff([A, B], []);
     expect(toBeAdded).toHaveLength(0);
     expect(toBeDeleted).toEqual([A, B]);
+  });
+});
+
+describe('ensureFetched', () => {
+  it('throws when nothing is fetched but the calendar has events', () => {
+    expect(() => ensureFetched([A], [])).toThrow('fetched no events');
+  });
+
+  it('passes when nothing is fetched and the calendar is empty', () => {
+    expect(() => ensureFetched([], [])).not.toThrow();
+  });
+
+  it('passes when events are fetched', () => {
+    expect(() => ensureFetched([A], [B])).not.toThrow();
   });
 });
