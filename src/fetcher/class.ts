@@ -1,22 +1,6 @@
-export type Class = 'r-4' | 's-4' | 'n-4' | 'l-4' | 's-course-4' | '';
+export const classes = ['r-4', 's-4', 'n-4', 'l-4', 's-course-4'] as const;
 
-export const R4: Class = 'r-4';
-export const S4: Class = 's-4';
-export const N4: Class = 'n-4';
-export const L4: Class = 'l-4';
-export const SCourse4: Class = 's-course-4';
-export const Unknown: Class = '';
-
-export function parseClass(s: string): Class {
-  switch (s) {
-    case 'r-4': return R4;
-    case 's-4': return S4;
-    case 'n-4': return N4;
-    case 'l-4': return L4;
-    case 's-course-4': return SCourse4;
-    default: return Unknown;
-  }
-}
+export type Class = (typeof classes)[number];
 
 export interface ClassInfo {
   // driveCourse parameter of the membership site
@@ -30,7 +14,7 @@ export interface ClassInfo {
 const racing = 'レーシングコース';
 const short = 'ショートコース';
 
-export function classInfo(cls: Exclude<Class, ''>): ClassInfo {
+export function classInfo(cls: Class): ClassInfo {
   switch (cls) {
     case 'r-4': return { course: racing, category: 'R-4', label: 'R-4' };
     case 's-4': return { course: racing, category: 'S-4', label: 'S-4' };

@@ -36,12 +36,11 @@ mise run typecheck
 ## アーキテクチャ
 
 1. GitHub Actions のcronスケジュール（毎日 17:00 UTC）で起動
-2. matrix で R-4 / S-4 / N-4 / L-4 / Sコース4輪 を並列実行
-3. `cmd/run/main.ts` が環境変数（`CALENDAR_ID`, `CLASS`）を読み込んで `register()` を呼び出す
-4. 会員サイトから当月1日以降の公開済みスケジュールを取得
-5. 既存のGoogleカレンダーイベントと差分比較
-6. 追加・削除が必要なイベントのみ更新
-7. エラー発生時はSlackに通知
+2. `cmd/run/main.ts` が `register()` を呼び出す（1ジョブで全クラスを処理する）
+3. 会員サイトから全クラス（R-4 / S-4 / N-4 / L-4 / Sコース4輪）の当月1日以降の公開済みスケジュールをまとめて取得（サイトへのリクエストは、ページ1回＋コースごとに1回）
+4. クラスごとに、既存のGoogleカレンダーイベントと差分比較
+5. 追加・削除が必要なイベントのみ更新
+6. エラー発生時はSlackに通知。1つのカレンダーが失敗しても他は続行し、最後にジョブを失敗にする
 
 ## 対応カレンダー
 
@@ -53,7 +52,7 @@ mise run typecheck
 
 ## 環境変数
 
-`src/config/config.ts` の `Config` インターフェースで管理されています。
+`src/config/config.ts` の `Config` インターフェースで管理されています。クラスごとの Google カレンダー ID は、公開情報なので `src/config/calendars.ts` に置いています。
 
 | 変数名 | デフォルト値 | 必須 | 説明 |
 |---|---|---|---|
@@ -61,8 +60,6 @@ mise run typecheck
 | `LOG_LEVEL` | `INFO` | | ログレベル（DEBUG/INFO/WARN/ERROR） |
 | `HOSTNAME` | `membership.fujimotorsportsforest.jp` | | 取得先の会員サイトのホスト名 |
 | `SLACK_WEBHOOK` | — | ○ | Slack Incoming Webhook URL |
-| `CALENDAR_ID` | — | ○ | Google カレンダー ID |
-| `CLASS` | — | ○ | クラス（`r-4` / `s-4` / `n-4` / `l-4` / `s-course-4`） |
 
 ## スケジュール取得
 
@@ -73,8 +70,8 @@ mise run typecheck
 
 主なパラメータ:
 
-- `driveCourse`: `レーシングコース` または `ショートコース`（`src/fetcher/class.ts` の `classInfo()` でクラスから決まる）
-- `driveCategoryList`: 取得するクラス名の JSON 配列。ショートコースは全角（`Ｓコース　４輪`、スペースも全角）
+- `driveCourse`: `レーシングコース` または `ショートコース`。1回の呼び出しで指定できるコースは1つ（`src/fetcher/class.ts` の `classInfo()` でクラスから決まる）
+- `driveCategoryList`: 取得するクラス名の JSON 配列。同じコースのクラスはまとめて指定し、レスポンスの `TMC_DX_DriveCategory__r.Name` でクラスに振り分ける。ショートコースは全角（`Ｓコース　４輪`、スペースも全角）
 - `driveDate`: 取得開始日。当月1日を指定する
 - `driveDateList`: `[]` にすると公開済みの全枠が返る。`maxDays` は `driveDate` からの日数上限
 
@@ -108,11 +105,11 @@ GitHub Actions のワークフローコマンドを使用します。`INFO` → 
 ## ローカル実行
 
 ```bash
-CALENDAR_ID=xxx@group.calendar.google.com \
-  CLASS=n-4 \
-  SLACK_WEBHOOK=https://hooks.slack.com/... \
+SLACK_WEBHOOK=https://hooks.slack.com/... \
   pnpm exec tsx ./cmd/run/main.ts
 ```
+
+全クラスの実カレンダーを更新します。
 
 ## テスト方針
 

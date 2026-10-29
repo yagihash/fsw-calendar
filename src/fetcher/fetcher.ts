@@ -9,6 +9,7 @@ interface DriveSlot {
   TMC_DX_EndTime__c: number;
   TMC_DX_DriveSlotNumber__c?: string;
   TMC_DX_IsReservationCanceled__c: boolean;
+  TMC_DX_DriveCategory__r?: { Name: string };
 }
 
 interface AuraResponse {
@@ -53,17 +54,14 @@ function formatTime(ms: number): string {
   return `${h}:${m}`;
 }
 
-// Fetches every published slot of the class on and after the first day of the given month.
-export async function fetchDocEvents(
+async function fetchDriveSlots(
   hostname: string,
-  cls: Exclude<Class, ''>,
+  context: Record<string, unknown>,
+  course: string,
+  categories: string[],
   y: number,
   m: number,
-): Promise<DocEvent[]> {
-  const info = classInfo(cls);
-  const pageUrl = `https://${hostname}/s/racing-course-reservation?language=ja`;
-  const context = await fetchAuraContext(pageUrl);
-
+): Promise<DriveSlot[]> {
   const message = {
     actions: [{
       id: '1;a',
@@ -75,9 +73,9 @@ export async function fetchDocEvents(
         method: 'getDriveSlotList',
         params: {
           accountName,
-          driveCourse: info.course,
+          driveCourse: course,
           driveDate: `${y}-${String(m).padStart(2, '0')}-01`,
-          driveCategoryList: JSON.stringify([info.category]),
+          driveCategoryList: JSON.stringify(categories),
           driveDateList: '[]',
           maxDays: 1000,
           limitNumber: 5000,
@@ -109,12 +107,44 @@ export async function fetchDocEvents(
     throw new Error(`failed to get drive slots (${action?.state ?? 'UNKNOWN'}): ${reason}`);
   }
 
-  return (action.returnValue?.returnValue ?? [])
-    .filter(s => !s.TMC_DX_IsReservationCanceled__c)
-    .map(s => ({
-      date: s.TMC_DX_DriveDate__c,
-      start: formatTime(s.TMC_DX_StartTime__c),
-      end: formatTime(s.TMC_DX_EndTime__c),
-      title: s.TMC_DX_DriveSlotNumber__c ? `${info.label} ${s.TMC_DX_DriveSlotNumber__c}` : info.label,
-    }));
+  return action.returnValue?.returnValue ?? [];
+}
+
+// Fetches every published slot of the classes on and after the first day of the given month.
+// It takes one request for the page and one for each course, whatever the number of the classes is.
+export async function fetchDocEvents(
+  hostname: string,
+  targets: readonly Class[],
+  y: number,
+  m: number,
+): Promise<Map<Class, DocEvent[]>> {
+  const results = new Map<Class, DocEvent[]>(targets.map(cls => [cls, []]));
+
+  const byCourse = new Map<string, Class[]>();
+  for (const cls of targets) {
+    const course = classInfo(cls).course;
+    byCourse.set(course, [...(byCourse.get(course) ?? []), cls]);
+  }
+
+  const context = await fetchAuraContext(`https://${hostname}/s/racing-course-reservation?language=ja`);
+
+  for (const [course, clsList] of byCourse) {
+    const byCategory = new Map(clsList.map(cls => [classInfo(cls).category, cls]));
+    const slots = await fetchDriveSlots(hostname, context, course, [...byCategory.keys()], y, m);
+
+    for (const s of slots) {
+      const cls = byCategory.get(s.TMC_DX_DriveCategory__r?.Name ?? '');
+      if (!cls || s.TMC_DX_IsReservationCanceled__c) continue;
+
+      const label = classInfo(cls).label;
+      results.get(cls)!.push({
+        date: s.TMC_DX_DriveDate__c,
+        start: formatTime(s.TMC_DX_StartTime__c),
+        end: formatTime(s.TMC_DX_EndTime__c),
+        title: s.TMC_DX_DriveSlotNumber__c ? `${label} ${s.TMC_DX_DriveSlotNumber__c}` : label,
+      });
+    }
+  }
+
+  return results;
 }

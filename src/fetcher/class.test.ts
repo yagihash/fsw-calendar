@@ -1,19 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseClass, classInfo, R4, S4, N4, L4, SCourse4, Unknown } from './class.js';
-
-describe('parseClass', () => {
-  it.each([
-    ['r-4', R4],
-    ['s-4', S4],
-    ['n-4', N4],
-    ['l-4', L4],
-    ['s-course-4', SCourse4],
-    ['ss-4', Unknown],
-    ['', Unknown],
-  ])('%s → %s', (input, want) => {
-    expect(parseClass(input)).toBe(want);
-  });
-});
+import { classes, classInfo } from './class.js';
 
 describe('classInfo', () => {
   it('maps racing course classes', () => {
@@ -26,5 +12,10 @@ describe('classInfo', () => {
       category: 'Ｓコース　４輪',
       label: 'Sコース 4輪',
     });
+  });
+
+  it('has a distinct category for each class in a course', () => {
+    const keys = classes.map(c => `${classInfo(c).course}/${classInfo(c).category}`);
+    expect(new Set(keys).size).toBe(classes.length);
   });
 });
