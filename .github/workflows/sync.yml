@@ -1,9 +1,8 @@
 name: sync
 
 on:
-  # TODO: 取得先URL変更への対応が完了するまで一時停止中
-  # schedule:
-  #   - cron: '0 17 * * *'
+  schedule:
+    - cron: '0 17 * * *'
   workflow_dispatch:
 
 permissions:
