@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@slack/webhook": "8.0.2",
-    "googleapis": "178.1.1",
+    "googleapis": "188.0.0",
     "tsx": "4.23.15"
   },
   "devDependencies": {
