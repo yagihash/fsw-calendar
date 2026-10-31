@@ -5,7 +5,6 @@
     ":dependencyDashboard",
     ":semanticCommits",
     ":timezone(Asia/Tokyo)",
-    "helpers:pinGitHubActionDigestsToSemver",
     "mergeConfidence:all-badges"
   ],
   "labels": [
@@ -37,13 +36,6 @@
         "major"
       ],
       "automerge": false
-    },
-    {
-      "description": "Pin GitHub Actions to commit SHA for security",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "pinDigests": true
     },
     {
       "description": "Group and automerge GitHub Actions digest/minor/patch updates",
@@ -102,8 +94,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update ghalint and actionlint versions in ghalint workflow",
-      "fileMatch": ["^\\.github/workflows/ghalint\\.yml$"],
+      "description": "Update ghalint and actionlint versions in actions-check workflow",
+      "fileMatch": ["^\\.github/workflows/actions-check\\.yml$"],
       "matchStrings": ["# renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)\\s+version=v?(?<currentValue>[^\\s]+)"],
       "versioningTemplate": "semver"
     }
