@@ -1,0 +1,14 @@
+excludes:
+  # actions.lock で commit に固定しているため、ghalint の安定版が actions.lock に対応するまで除外する
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: actions/checkout
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: actions/setup-node
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: cicd-sensor/cicd-sensor-action
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: dorny/paths-filter
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: google-github-actions/auth
+  - policy_name: action_ref_should_be_full_length_commit_sha
+    action_name: pnpm/action-setup

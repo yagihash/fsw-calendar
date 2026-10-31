@@ -16,15 +16,15 @@ jobs:
     outputs:
       workflows: ${{ steps.filter.outputs.workflows }}
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@2bc31a18949a77cd5f5bd452f24f00fbb507cdf6 # v0.0.41
+      - uses: cicd-sensor/cicd-sensor-action@v0.0.41
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+      - uses: dorny/paths-filter@v4.0.3
         id: filter
         with:
           filters: |
@@ -41,12 +41,12 @@ jobs:
       attestations: read
 
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@2bc31a18949a77cd5f5bd452f24f00fbb507cdf6 # v0.0.41
+      - uses: cicd-sensor/cicd-sensor-action@v0.0.41
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
@@ -78,12 +78,12 @@ jobs:
       attestations: read
 
     steps:
-      - uses: cicd-sensor/cicd-sensor-action@2bc31a18949a77cd5f5bd452f24f00fbb507cdf6 # v0.0.41
+      - uses: cicd-sensor/cicd-sensor-action@v0.0.41
         with:
           enable-html-report: "false"
           enable-attestation-artifact: "false"
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
