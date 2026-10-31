@@ -1,4 +1,4 @@
-name: "Run Actions Security Check"
+name: "Run Actions Check"
 
 on:
   pull_request:

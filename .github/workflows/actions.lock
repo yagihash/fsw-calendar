@@ -3,7 +3,7 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
-    '.github/workflows/ghalint.yml':
+    '.github/workflows/actions-check.yml':
         - 'actions/checkout@v7.0.1'
         - 'cicd-sensor/cicd-sensor-action@v0.0.41'
         - 'dorny/paths-filter@v4.0.3'

@@ -94,8 +94,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update ghalint and actionlint versions in ghalint workflow",
-      "fileMatch": ["^\\.github/workflows/ghalint\\.yml$"],
+      "description": "Update ghalint and actionlint versions in actions-check workflow",
+      "fileMatch": ["^\\.github/workflows/actions-check\\.yml$"],
       "matchStrings": ["# renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)\\s+version=v?(?<currentValue>[^\\s]+)"],
       "versioningTemplate": "semver"
     }
