@@ -5,7 +5,6 @@
     ":dependencyDashboard",
     ":semanticCommits",
     ":timezone(Asia/Tokyo)",
-    "helpers:pinGitHubActionDigestsToSemver",
     "mergeConfidence:all-badges"
   ],
   "labels": [
@@ -37,13 +36,6 @@
         "major"
       ],
       "automerge": false
-    },
-    {
-      "description": "Pin GitHub Actions to commit SHA for security",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "pinDigests": true
     },
     {
       "description": "Group and automerge GitHub Actions digest/minor/patch updates",
