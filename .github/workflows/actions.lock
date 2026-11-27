@@ -3,19 +3,16 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
-    '.github/workflows/actions-check.yml':
+    '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
+        - 'actions/setup-node@v7.1.0'
         - 'cicd-sensor/cicd-sensor-action@v0.0.41'
         - 'dorny/paths-filter@v4.0.3'
+        - 'pnpm/action-setup@v6.1.1'
     '.github/workflows/sync.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'google-github-actions/auth@v3.0.0'
-        - 'pnpm/action-setup@v6.1.1'
-    '.github/workflows/test.yml':
-        - 'actions/checkout@v7.0.1'
-        - 'actions/setup-node@v7.1.0'
-        - 'cicd-sensor/cicd-sensor-action@v0.0.41'
         - 'pnpm/action-setup@v6.1.1'
 dependencies:
     'actions/checkout@v7.0.1':

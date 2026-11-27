@@ -1,5 +1,5 @@
 # fsw-calendar
-[![test](https://github.com/yagihash/fsw-calendar/actions/workflows/test.yml/badge.svg)](https://github.com/yagihash/fsw-calendar/actions/workflows/test.yml)
+[![CI](https://github.com/yagihash/fsw-calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/yagihash/fsw-calendar/actions/workflows/ci.yml)
 
 A small TypeScript implementation that automatically registers the schedules of the membership driving slots at Fuji International Speedway into Google Calendar.
 
