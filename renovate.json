@@ -5,28 +5,17 @@
   ],
   "packageRules": [
     {
-      "description": "Automerge npm minor/patch updates",
-      "matchManagers": [
-        "npm"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "automerge": true
-    },
-    {
       "description": "Group @types/* updates together",
       "groupName": "@types packages",
       "matchManagers": [
         "npm"
       ],
-      "matchPackagePrefixes": [
-        "@types/"
-      ],
       "matchUpdateTypes": [
         "minor",
         "patch"
+      ],
+      "matchPackageNames": [
+        "@types/**"
       ]
     },
     {
