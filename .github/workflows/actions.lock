@@ -10,6 +10,7 @@ workflows:
         - 'dorny/paths-filter@v4.0.3'
         - 'pnpm/action-setup@v6.1.1'
         - 'yagihash/actions@v0.1.0'
+        - 'yagihash/actions@v0.2.0'
     '.github/workflows/sync.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
@@ -49,5 +50,10 @@ dependencies:
     'yagihash/actions@v0.1.0':
         ref: 'v0.1.0'
         commit: 'sha1-b2075301726190d59d2cf57e54d62700c55ae134'
+        owner_id: 1553908
+        repo_id: 1309947540
+    'yagihash/actions@v0.2.0':
+        ref: 'v0.2.0'
+        commit: 'sha1-9f208d1c7c8bdccc9fb897307a18b15375ee5000'
         owner_id: 1553908
         repo_id: 1309947540
