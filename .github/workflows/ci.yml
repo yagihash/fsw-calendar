@@ -197,7 +197,7 @@ jobs:
     timeout-minutes: 5
     permissions: {}
     steps:
-      - uses: yagihash/actions/ci-ok@b2075301726190d59d2cf57e54d62700c55ae134 # v0.1.0
+      - uses: yagihash/actions/ci-ok@v0.1.0
         with:
           needs: ${{ toJSON(needs) }}
           filter-job: changes
